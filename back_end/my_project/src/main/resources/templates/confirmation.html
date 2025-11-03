@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận đặt vé</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+<div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #f97316;">ĐẶT VÉ THÀNH CÔNG!</h1>
+
+    <p>Xin chào <strong th:text="${customerName}">Khách hàng</strong>,</p>
+
+    <p>Cảm ơn bạn đã đặt vé tại hệ thống của chúng tôi. Dưới đây là thông tin chi tiết:</p>
+
+    <hr style="border: 1px solid #eee; margin: 20px 0;">
+
+    <h2 style="color: #f97316;" th:text="${movieTitle}">TÊN PHIM</h2>
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 8px 0;"><strong>Mã đặt vé:</strong></td>
+            <td style="padding: 8px 0;" th:text="${bookingCode}">BK2025011501</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Rạp chiếu:</strong></td>
+            <td style="padding: 8px 0;" th:text="${cinemaName}">CGV Vincom</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Địa chỉ:</strong></td>
+            <td style="padding: 8px 0;" th:text="${cinemaAddress}">191 Bà Triệu, Hà Nội</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Ngày chiếu:</strong></td>
+            <td style="padding: 8px 0;" th:text="${showDate}">15/01/2025</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Giờ chiếu:</strong></td>
+            <td style="padding: 8px 0;" th:text="${showTime}">19:00</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Phòng:</strong></td>
+            <td style="padding: 8px 0;" th:text="${roomName}">Phòng 2</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Ghế:</strong></td>
+            <td style="padding: 8px 0;" th:text="${seats}">A5, A6, A7</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Tổng tiền:</strong></td>
+            <td style="padding: 8px 0; color: #f97316; font-size: 18px; font-weight: bold;" th:text="${totalAmount}">355.000đ</td>
+        </tr>
+    </table>
+
+    <hr style="border: 1px solid #eee; margin: 20px 0;">
+
+    <div style="background-color: #eff6ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0;"><strong>Lưu ý:</strong></p>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            <li>Vui lòng có mặt trước giờ chiếu 15 phút</li>
+            <li>Xuất trình mã đặt vé tại quầy để nhận vé</li>
+            <li>Vé đã mua không thể đổi hoặc hoàn lại</li>
+        </ul>
+    </div>
+
+    <p style="text-align: center; margin: 30px 0;">
+        <a href="#" th:href="@{${viewTicketUrl}}" style="background-color: #f97316; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block;">Xem chi tiết vé</a>
+    </p>
+
+    <hr style="border: 1px solid #eee; margin: 20px 0;">
+
+    <p style="text-align: center; color: #666; font-size: 14px;">
+        Hotline: <strong>1900 1234</strong> | Email: support@cinemabooking.vn<br>
+        © 2025 Cinema Booking. All rights reserved.
+    </p>
+</div>
+</body>
+</html>

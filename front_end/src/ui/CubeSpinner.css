@@ -1,0 +1,55 @@
+/* CubeSpinner.css */
+
+.cube-spinner {
+    position: relative;
+    width: 80px; /* Kích thước khối lập phương */
+    height: 80px;
+    transform-style: preserve-3d;
+    animation: rotateCube 4s infinite linear;
+    transform-origin: 40px 40px 0; /* Tâm quay */
+}
+
+.cube-face {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgba(100, 100, 255, 0.7); /* Viền màu xanh nhạt */
+    background: rgba(130, 130, 255, 0.3); /* Nền trong suốt với màu */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Định vị các mặt của khối lập phương */
+.cube-face-front {
+    transform: rotateY(0deg) translateZ(40px);
+}
+.cube-face-back {
+    transform: rotateX(180deg) translateZ(40px);
+}
+.cube-face-right {
+    transform: rotateY(90deg) translateZ(40px);
+}
+.cube-face-left {
+    transform: rotateY(-90deg) translateZ(40px);
+}
+.cube-face-top {
+    transform: rotateX(90deg) translateZ(40px);
+}
+.cube-face-bottom {
+    transform: rotateX(-90deg) translateZ(40px);
+}
+
+/* Keyframes cho hiệu ứng quay của khối lập phương */
+@keyframes rotateCube {
+    0% {
+        transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    }
+    100% {
+        transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+    }
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác Thực Tài Khoản</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed; background-color: #f4f4f4;">
+    <tr>
+        <td align="center" style="padding: 20px 0;">
+            <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 5px solid #007bff;">
+
+                <tr>
+                    <td align="center" style="padding: 30px 20px 10px; border-bottom: 1px solid #eeeeee;">
+                        <h1 style="color: #007bff; font-size: 28px; margin: 0;">Xác Thực Tài Khoản 🔐</h1>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 40px 40px 20px;">
+                        <p style="font-size: 16px; color: #333333; margin: 0 0 20px;">
+                            Xin chào <strong>{{userName}}</strong>,
+                        </p>
+
+                        <p style="font-size: 16px; color: #333333; margin: 0 0 30px;">
+                            Chúng tôi nhận được yêu cầu xác thực tài khoản. Vui lòng sử dụng mã OTP dưới đây để hoàn tất:
+                        </p>
+
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td align="center" style="padding: 20px; background-color: #e9ecef; border-radius: 6px; border: 2px dashed #ffc107;">
+                                        <span style="display: block; color: #dc3545; font-size: 36px; font-weight: bold; letter-spacing: 6px;">
+                                            {{otpCode}}
+                                        </span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p style="text-align: center; font-size: 14px; color: #6c757d; margin: 20px 0 30px;">
+                            Mã này sẽ **hết hạn sau 5 phút**. Vui lòng nhập ngay để tránh bị khóa.
+                        </p>
+
+                        <p style="font-size: 16px; color: #333333; margin: 0;">
+                            Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" style="padding: 20px 40px; border-top: 1px solid #eeeeee;">
+                        <p style="font-size: 12px; color: #999999; margin: 0;">
+                            Đây là email tự động, vui lòng không trả lời.
+                        </p>
+                        <p style="font-size: 12px; color: #999999; margin: 5px 0 0;">
+                            &copy; CodeGym - 2025 .
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
