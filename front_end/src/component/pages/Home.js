@@ -244,7 +244,7 @@ import {
     Shield
 } from "lucide-react";
 import {images} from "../../service/slider";
-import {getCurrentUser} from "../../service/login/authApi";
+import {getCurrentUser} from "../../service/user/login/authApi";
 
 export default function Index() {
     const navigate = useNavigate();

@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 
 @RestController
 @CrossOrigin("*")
-            @RequestMapping("/api/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     private final IUserRepository userRepository;

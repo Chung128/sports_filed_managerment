@@ -1,8 +1,8 @@
 package com.example.my_project.controller;
 
-import com.example.my_project.dto.BookingRequest;
-import com.example.my_project.dto.BookingResponseDTO;
-import com.example.my_project.dto.CourtAvailabilityDTO;
+import com.example.my_project.dto.users.BookingRequest;
+import com.example.my_project.dto.users.BookingResponseDTO;
+import com.example.my_project.dto.users.CourtAvailabilityDTO;
 import com.example.my_project.entity.Booking;
 import com.example.my_project.entity.Court;
 import com.example.my_project.entity.User;
@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -203,8 +204,34 @@ public void handlePaymentCallback(
         tempBookingService.unlockSlots(txnRef);
         vnpayService.deleteBookingRequestFromTempStorage(txnRef);
     }
+//    else if (success) {
+//        try {
+//            Booking firstBooking = bookingService.createBooking(request, "PAID", txnRef);
+//
+//            Court court = firstBooking.getCourt();
+//            courtName = court.getName();
+//            date = firstBooking.getSpecificDate().toString();
+//            timeSlots = firstBooking.getHourlyStartTime() + "-" + firstBooking.getHourlyEndTime();
+//            amount = firstBooking.getTotalAmount();
+//            message = "Đặt sân thành công!";
+//
+//            // THÀNH CÔNG: XÓA TEMP LOCK + TEMP STORAGE
+//            tempBookingService.unlockSlots(txnRef);
+//            vnpayService.deleteBookingRequestFromTempStorage(txnRef);
+//
+//        } catch (Exception e) {
+//            logger.error("Lỗi tạo booking: {}", e.getMessage(), e);
+//            success = false;
+//            message = "Đặt sân thất bại: " + e.getMessage();
+//
+//            // LỖI: VẪN XÓA TEMP
+//            tempBookingService.unlockSlots(txnRef);
+//            vnpayService.deleteBookingRequestFromTempStorage(txnRef);
+//        }
+//    }
     else if (success) {
         try {
+            //  KHÔNG unlock trước — giữ nguyên temp để tránh WebSocket gửi UNLOCK sai
             Booking firstBooking = bookingService.createBooking(request, "PAID", txnRef);
 
             Court court = firstBooking.getCourt();
@@ -214,8 +241,10 @@ public void handlePaymentCallback(
             amount = firstBooking.getTotalAmount();
             message = "Đặt sân thành công!";
 
-            // THÀNH CÔNG: XÓA TEMP LOCK + TEMP STORAGE
-            tempBookingService.unlockSlots(txnRef);
+            //  Sau khi tạo booking thành công:
+            // 1. Xóa temp lock + gửi event BOOKED để FE cập nhật trạng thái
+            // 2. Xóa temp trong vnpayService
+            tempBookingService.deleteTempsAndPublishBooked(txnRef, firstBooking);
             vnpayService.deleteBookingRequestFromTempStorage(txnRef);
 
         } catch (Exception e) {
@@ -223,11 +252,12 @@ public void handlePaymentCallback(
             success = false;
             message = "Đặt sân thất bại: " + e.getMessage();
 
-            // LỖI: VẪN XÓA TEMP
+            //  Nếu lỗi thì mở khóa slot + xóa temp
             tempBookingService.unlockSlots(txnRef);
             vnpayService.deleteBookingRequestFromTempStorage(txnRef);
         }
     }
+
     else {
         message = "Thanh toán thất bại: " + getVnpayErrorMessage(responseCode);
 
@@ -288,4 +318,19 @@ public void handlePaymentCallback(
         response.setNote(updated.getNote());
         return ResponseEntity.ok(response);
     }
+//    @GetMapping("/api/v1/temp-booking/locked")
+//    public ResponseEntity<List<TempBooking>> getLockedSlots(
+//            @RequestParam Long courtId,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+//        return ResponseEntity.ok(tempBookingService.(courtId, date));
+//    }
+@GetMapping("/temp-booking/locked")
+public ResponseEntity<List<Map<String, String>>> getLockedSlots(
+        @RequestParam Long courtId,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+    List<Map<String, String>> slots = tempBookingService.getLockedSlots(courtId, date);
+    return ResponseEntity.ok(slots);
+}
+
 }

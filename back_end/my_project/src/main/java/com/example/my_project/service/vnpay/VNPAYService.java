@@ -1,7 +1,7 @@
 //package com.example.my_project.service.vnpay;
 //
 //import com.example.my_project.config.vnpay.VNPayConfig;
-//import com.example.my_project.dto.BookingRequest;
+//import com.example.my_project.dto.users.BookingRequest;
 //import com.example.my_project.entity.TempBookingRequest;
 //import com.example.my_project.repository.ITempBookingRequestRepository;
 //import com.fasterxml.jackson.core.JsonProcessingException;
@@ -156,7 +156,7 @@
 package com.example.my_project.service.vnpay;
 
 import com.example.my_project.config.vnpay.VNPayConfig;
-import com.example.my_project.dto.BookingRequest;
+import com.example.my_project.dto.users.BookingRequest;
 import com.example.my_project.entity.TempBookingRequest;
 import com.example.my_project.repository.ITempBookingRequestRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

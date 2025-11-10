@@ -15,8 +15,7 @@ export default function SitemapPage() {
             links: [
                 { title: "Trang chủ", url: "/", description: "Landing page chính của AutoMarketing" },
                 { title: "Về chúng tôi", url: "/about", description: "Thông tin về công ty và đội ngũ" },
-                { title: "Tính năng", url: "/features", description: "Chi tiết các tính năng của platform" },
-                { title: "Bảng giá", url: "/pricing", description: "Các gói dịch vụ và định giá" },
+                { title: "Bảng giá", url: "/booking", description: "Các gói dịch vụ và định giá" },
                 { title: "Liên hệ", url: "/contact", description: "Thông tin liên hệ và form tư vấn" }
             ]
         },

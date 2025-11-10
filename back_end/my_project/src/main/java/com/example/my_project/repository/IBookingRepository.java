@@ -12,6 +12,10 @@ import java.util.Optional;
 
 public interface IBookingRepository extends JpaRepository<Booking, Long> {
 
+    // Lấy tất cả booking của user (chưa bị xóa mềm nếu có cột softDelete)
+    @Query("SELECT b FROM Booking b WHERE b.user.id = :userId ORDER BY b.specificDate DESC, b.hourlyStartTime ASC")
+    List<Booking> findByUserId(Long userId);
+
     @Query("SELECT b FROM Booking b WHERE b.court.id = :courtId AND b.specificDate = :date " +
             "AND (b.hourlyStartTime < :endTime AND b.hourlyEndTime > :startTime)")
     List<Booking> findTimeConflictsForHourly(Long courtId, LocalDate date, LocalTime startTime, LocalTime endTime);
@@ -35,6 +39,5 @@ public interface IBookingRepository extends JpaRepository<Booking, Long> {
 
     Optional<Booking> findFirstByContractCode(String contractCode);
 
-    // Có thể thêm các phương thức tìm booking theo user, status, v.v.
-    List<Booking> findByUserId(Long userId); // Nếu có Entity User
+
 }

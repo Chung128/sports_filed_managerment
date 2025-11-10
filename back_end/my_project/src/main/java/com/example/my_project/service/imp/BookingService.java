@@ -1,7 +1,7 @@
 //package com.example.my_project.service.imp;
 //
-//import com.example.my_project.dto.BookingRequest;
-//import com.example.my_project.dto.CourtAvailabilityDTO;
+//import com.example.my_project.dto.users.BookingRequest;
+//import com.example.my_project.dto.users.CourtAvailabilityDTO;
 //import com.example.my_project.entity.*;
 //import com.example.my_project.enums.DayOfWeekType;
 //import com.example.my_project.enums.StatusCourt;
@@ -314,8 +314,8 @@
 
 package com.example.my_project.service.imp;
 
-import com.example.my_project.dto.BookingRequest;
-import com.example.my_project.dto.CourtAvailabilityDTO;
+import com.example.my_project.dto.users.BookingRequest;
+import com.example.my_project.dto.users.CourtAvailabilityDTO;
 import com.example.my_project.entity.*;
 import com.example.my_project.enums.*;
 import com.example.my_project.repository.*;
@@ -439,56 +439,6 @@ public class BookingService implements IBookingService {
         return total;
     }
 
-    //    @Override
-//    public List<CourtAvailabilityDTO> getAvailableCourts(Long variantId, LocalDate date, LocalTime startTime, LocalTime endTime) {
-//        logger.info("Checking availability for variantId: {}, date: {}, startTime: {}, endTime: {}",
-//                variantId, date, startTime, endTime);
-//
-//        List<Court> courts = courtRepository.findByCourtVariantId(variantId);
-//        if (courts.isEmpty()) {
-//            logger.warn("No courts found for variantId: {}", variantId);
-//            return List.of();
-//        }
-//
-//        return courts.stream().map(court -> {
-//            StatusCourt status = court.getStatus();
-//            logger.debug("Court {} status: {}", court.getName(), status);
-//
-//            if (status == StatusCourt.MAINTENANCE || status == StatusCourt.OUT_OF_SERVICE) {
-//                return CourtAvailabilityDTO.builder()
-//                        .courtId(court.getId())
-//                        .courtName(court.getName())
-//                        .courtVariantId(variantId)
-//                        .status(status)
-//                        .startTime(startTime)
-//                        .endTime(endTime)
-//                        .build();
-//            }
-//
-//            List<Booking> conflicts = bookingRepository.findTimeConflictsForHourly(court.getId(), date, startTime, endTime);
-//            logger.debug("Court {} conflicts found: {}", court.getName(), conflicts.size());
-//
-//            status = conflicts.isEmpty() ? StatusCourt.AVAILABLE : StatusCourt.BOOKED_OR_IN_USE;
-//
-//            BigDecimal estimatedPrice = null;
-//            try {
-//                estimatedPrice = calculatePrice(variantId, date, startTime, endTime);
-//            } catch (Exception e) {
-//                logger.error("Error calculating price for court {}: {}", court.getName(), e.getMessage());
-//                estimatedPrice = new BigDecimal("300000");
-//            }
-//
-//            return CourtAvailabilityDTO.builder()
-//                    .courtId(court.getId())
-//                    .courtName(court.getName())
-//                    .courtVariantId(variantId)
-//                    .status(status)
-//                    .startTime(startTime)
-//                    .endTime(endTime)
-//                    .estimatedPrice(estimatedPrice)
-//                    .build();
-//        }).collect(Collectors.toList());
-//    }
     @Override
     public List<CourtAvailabilityDTO> getAvailableCourts(Long variantId, LocalDate date, LocalTime startTime, LocalTime endTime) {
         logger.info("Checking availability for variantId: {}, date: {}, startTime: {}, endTime: {}",
@@ -562,101 +512,6 @@ public class BookingService implements IBookingService {
 
     // Trong BookingService.java
 
-//    @Override
-//    @Transactional
-//    public Booking createBooking(BookingRequest request, String paymentStatus, String transactionId) throws Exception {
-//        if (request.getCourtId() == null || request.getBookingTypeId() == null || request.getSpecificDate() == null) {
-//            throw new IllegalArgumentException("Dữ liệu không đầy đủ");
-//        }
-//
-//        if (!"PAID".equals(paymentStatus)) {
-//            throw new IllegalStateException("Thanh toán chưa thành công");
-//        }
-//
-//        // Ưu tiên lấy user từ JWT (nếu có)
-//        User user = null;
-//        if (SecurityContextHolder.getContext().getAuthentication() != null
-//                && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
-//            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//            user = userRepository.findByUsername(username)
-//                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy user: " + username));
-//        }
-//        // Nếu không có JWT (ví dụ callback từ VNPAY) → fallback sang userId trong request
-//        else if (request.getUserId() != null) {
-//            user = userRepository.findById(request.getUserId())
-//                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy userId: " + request.getUserId()));
-//        } else {
-//            throw new IllegalArgumentException("Không tìm thấy thông tin người dùng (thiếu token hoặc userId)");
-//        }
-//
-//
-//        List<BookingRequest.TimeSlot> slots = request.getTimeSlots();
-//        if (slots == null || slots.isEmpty()) {
-//            throw new IllegalArgumentException("Chưa chọn khung giờ");
-//        }
-//
-//        BigDecimal totalAmount = BigDecimal.ZERO;
-//        List<Booking> createdBookings = new ArrayList<>();
-//
-//        for (BookingRequest.TimeSlot slot : slots) {
-//            // Kiểm tra xung đột
-//            List<Booking> conflicts = bookingRepository.findTimeConflictsForHourly(
-//                    request.getCourtId(), request.getSpecificDate(), slot.getStartTime(), slot.getEndTime()
-//            );
-//            if (!conflicts.isEmpty()) {
-//                throw new IllegalStateException("Khung giờ " + slot.getStartTime() + " - " + slot.getEndTime() + " đã được đặt");
-//            }
-//
-//            // Tính giá
-//            BigDecimal price = calculatePrice(
-//                    courtRepository.findById(request.getCourtId()).get().getCourtVariant().getId(),
-//                    request.getSpecificDate(),
-//                    slot.getStartTime(),
-//                    slot.getEndTime()
-//            );
-//            totalAmount = totalAmount.add(price);
-//
-//            // Tạo booking
-//            Booking booking = new Booking();
-//            booking.setCourt(courtRepository.findById(request.getCourtId()).orElseThrow());
-//            booking.setBookingType(bookingTypeRepository.findById(request.getBookingTypeId()).orElseThrow());
-//            booking.setUser(user);
-//            booking.setBookingDate(LocalDateTime.now());
-//            booking.setTotalAmount(price);
-//            booking.setPaymentStatus("PAID");
-//            booking.setSpecificDate(request.getSpecificDate());
-//            booking.setHourlyStartTime(slot.getStartTime());
-//            booking.setHourlyEndTime(slot.getEndTime());
-//            booking.setNote(request.getNote());
-//
-//            Booking saved = bookingRepository.save(booking);
-//            createdBookings.add(saved);
-//        }
-//
-//        // Lưu Payment (tổng tiền)
-//        Payment payment = new Payment();
-//        payment.setAmount(totalAmount);
-//        payment.setPaymentMethod(PaymentMethod.VNPAY);
-//        payment.setStatus(PaymentStatus.PAID);
-//        payment.setUser(user);
-//        payment.setBooking(createdBookings.get(0)); // Gắn vào booking đầu tiên
-//        paymentRepository.save(payment);
-//
-//        // Gửi email (gửi 1 email cho toàn bộ)
-//        Court court = courtRepository.findById(request.getCourtId()).orElseThrow();
-//        emailService.sendBookingConfirmationEmail(
-//                user.getEmail(),
-//                user.getUsername(),
-//                createdBookings.stream().map(b -> b.getId().toString()).collect(Collectors.joining(", ")),
-//                court.getName(),
-//                request.getSpecificDate().toString(),
-//                slots.stream().map(s -> s.getStartTime() + "-" + s.getEndTime()).collect(Collectors.joining(", ")),
-//                totalAmount,
-//                "PAID"
-//        );
-//
-//        return createdBookings.get(0); // Trả về booking đầu tiên
-//    }
 @Override
 @Transactional
 public Booking createBooking(BookingRequest request, String paymentStatus, String transactionId) throws Exception {
@@ -834,5 +689,10 @@ public Booking createBooking(BookingRequest request, String paymentStatus, Strin
             booking.setPaymentStatus("CANCELLED");
         }
         return bookingRepository.save(booking);
+    }
+
+    @Override
+    public List<Booking> getBookingsByUserId(Long userId) {
+        return bookingRepository.findByUserId(userId);
     }
 }

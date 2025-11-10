@@ -1,5 +1,6 @@
 package com.example.my_project.service;
 
+import com.example.my_project.dto.admin.UserDetailDTO;
 import com.example.my_project.entity.User;
 
 import java.util.List;
@@ -11,5 +12,6 @@ public interface IUserService {
     User save(User user);
     void deleteSoft(Long id);
     void delete(Long id);
-    public User getCurrentUser();
+     User getCurrentUser();
+    UserDetailDTO getUserDetail(Long userId);
 }

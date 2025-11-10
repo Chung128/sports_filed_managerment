@@ -19,7 +19,7 @@ public interface ITempBookingRepository extends JpaRepository<TempBooking,Long> 
     List<TempBooking> findConflicts(Long courtId, LocalDate date, LocalTime startTime, LocalTime endTime);
 
     List<TempBooking> findByTxnRef(String txnRef);
-    void deleteByCreatedAtBefore(java.time.LocalDateTime expiry);
+
     @Query("""
     SELECT t FROM TempBooking t 
     WHERE t.txnRef = :sessionId 
@@ -31,4 +31,7 @@ public interface ITempBookingRepository extends JpaRepository<TempBooking,Long> 
             Long courtId,
             LocalDate date
     );
+    void deleteByCreatedAtBefore(java.time.LocalDateTime expiry);
+    List<TempBooking> findByCreatedAtBefore(java.time.LocalDateTime cutoff);
+    List<TempBooking> findByCourtIdAndSpecificDate(Long courtId, LocalDate specificDate);
 }

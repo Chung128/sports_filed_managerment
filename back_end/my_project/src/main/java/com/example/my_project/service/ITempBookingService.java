@@ -1,6 +1,6 @@
 package com.example.my_project.service;
 
-import com.example.my_project.dto.BookingRequest;
+import com.example.my_project.dto.users.BookingRequest;
 
 public interface ITempBookingService {
     void lockSlots(BookingRequest request, String txnRef);

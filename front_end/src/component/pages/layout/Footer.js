@@ -35,7 +35,7 @@ export default function Footer() {
                         <div className="flex items-center gap-3">
                             <span className="text-xs text-gray-500">Theo dõi:</span>
                             {[
-                                { icon: Facebook, href: "#" },
+                                { icon: Facebook, href: "https://www.facebook.com/tuyensonsport" },
                                 { icon: Instagram, href: "#" },
                                 { icon: Twitter, href: "#" },
                                 { icon: Linkedin, href: "#" },
@@ -56,8 +56,8 @@ export default function Footer() {
                         <h4 className="text-gray-900 font-semibold mb-4">Hỗ trợ</h4>
                         <ul className="space-y-3">
                             {[
-                                { label: "Liên hệ", href: "/contact" },
-                                { label: "Trung tâm trợ giúp", href: "/help" },
+                                { label: "Liên hệ", href: "https://www.facebook.com/tuyensonsport" },
+                                { label: "Trung tâm trợ giúp", href: "https://www.facebook.com/tuyensonsport" },
                                 { label: "Câu hỏi thường gặp", href: "/faq" },
                                 { label: "Hướng dẫn sử dụng", href: "/guide" },
                             ].map((item) => (

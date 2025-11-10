@@ -1,5 +1,5 @@
 //package com.example.my_project.controller;
-//import com.example.my_project.dto.BookingRequest;
+//import com.example.my_project.dto.users.BookingRequest;
 //import com.example.my_project.service.imp.TempBookingService;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.messaging.handler.annotation.DestinationVariable;

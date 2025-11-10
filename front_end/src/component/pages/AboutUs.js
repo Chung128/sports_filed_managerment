@@ -158,7 +158,6 @@ export default function AboutUs() {
                             className="w-full h-full object-cover"
                         />
                     </div>
-
                 </section>
             </div>
         </>

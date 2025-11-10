@@ -12,7 +12,7 @@ import {
     // CreditCardIcon, // Đã loại bỏ icon không dùng
 } from "@heroicons/react/24/solid";
 import toast from "react-hot-toast";
-import { getCurrentUser } from "../../../service/login/authApi";
+import { getCurrentUser } from "../../../service/user/login/authApi";
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -82,6 +82,7 @@ export default function Navbar() {
         { path: "/", label: "Trang chủ" },
         { path: "/about", label: "Giới thiệu" },
         { path: "/booking", label: "Đặt sân", checkAuth: true }, // Thêm cờ checkAuth
+        { path: "/admin", label: "Quản lí", checkAuth: true ,role :"ADMIN"},
     ];
 
     const userMenuItems = [
@@ -116,28 +117,33 @@ export default function Navbar() {
                 {/* 2. Menu Desktop */}
                 <div className="hidden lg:flex items-center space-x-6">
                     <nav className="flex items-center space-x-6">
-                        {navLinks.map((link) => (
-                            <NavLink
-                                key={link.path}
-                                to={link.path}
-                                // ÁP DỤNG HÀM XỬ LÝ SỰ KIỆN Ở ĐÂY
-                                onClick={link.checkAuth ? handleBookingClick : undefined}
-                                className={({ isActive }) =>
-                                    `text-base font-semibold transition-all duration-200 ease-in-out relative group ${
-                                        isActive
-                                            ? "text-blue-600"
-                                            : "text-gray-700 hover:text-blue-500"
-                                    }`
-                                }
-                            >
-                                {link.label}
-                                {/* Hiệu ứng gạch chân mượt mà */}
-                                <span className={`absolute bottom-[-5px] left-0 w-full h-[3px] bg-blue-600 rounded-full transition-transform duration-300 ${
-                                    location.pathname === link.path ? "scale-x-100" : "scale-x-0 group-hover:scale-x-75"
-                                }`}></span>
-                            </NavLink>
-                        ))}
+                        {navLinks
+                            .filter((link) => !link.role || user?.role === link.role) // lọc theo role
+                            .map((link) => (
+                                <NavLink
+                                    key={link.path}
+                                    to={link.path}
+                                    onClick={link.checkAuth ? handleBookingClick : undefined}
+                                    className={({ isActive }) =>
+                                        `text-base font-semibold transition-all duration-200 ease-in-out relative group ${
+                                            isActive
+                                                ? "text-blue-600"
+                                                : "text-gray-700 hover:text-blue-500"
+                                        }`
+                                    }
+                                >
+                                    {link.label}
+                                    <span
+                                        className={`absolute bottom-[-5px] left-0 w-full h-[3px] bg-blue-600 rounded-full transition-transform duration-300 ${
+                                            location.pathname === link.path
+                                                ? "scale-x-100"
+                                                : "scale-x-0 group-hover:scale-x-75"
+                                        }`}
+                                    ></span>
+                                </NavLink>
+                            ))}
                     </nav>
+
 
                     {/* Auth Section */}
                     <div className="pl-4 border-l border-gray-200">
@@ -220,23 +226,24 @@ export default function Navbar() {
             {mobileMenuOpen && (
                 <div className="lg:hidden absolute top-16 left-0 w-full bg-white shadow-xl z-40 animate-slide-down">
                     <div className="flex flex-col p-4 space-y-2 border-b border-gray-100">
-                        {navLinks.map((link) => (
-                            <NavLink
-                                key={link.path}
-                                to={link.path}
-                                // ÁP DỤNG HÀM XỬ LÝ SỰ KIỆN Ở ĐÂY
-                                onClick={link.checkAuth ? handleBookingClick : undefined}
-                                className={({ isActive }) =>
-                                    `block px-4 py-2 text-base font-medium rounded-lg transition ${
-                                        isActive
-                                            ? "bg-blue-100 text-blue-600"
-                                            : "text-gray-700 hover:bg-gray-50"
-                                    }`
-                                }
-                            >
-                                {link.label}
-                            </NavLink>
-                        ))}
+                        {navLinks
+                            .filter((link) => !link.role || user?.role === link.role)
+                            .map((link) => (
+                                <NavLink
+                                    key={link.path}
+                                    to={link.path}
+                                    onClick={link.checkAuth ? handleBookingClick : undefined}
+                                    className={({ isActive }) =>
+                                        `block px-4 py-2 text-base font-medium rounded-lg transition ${
+                                            isActive
+                                                ? "bg-blue-100 text-blue-600"
+                                                : "text-gray-700 hover:bg-gray-50"
+                                        }`
+                                    }
+                                >
+                                    {link.label}
+                                </NavLink>
+                            ))}
                     </div>
 
                     <div className="p-4 flex flex-col space-y-2">

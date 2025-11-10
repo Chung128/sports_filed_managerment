@@ -1,7 +1,7 @@
 package com.example.my_project.service;
 
-import com.example.my_project.dto.BookingRequest;
-import com.example.my_project.dto.CourtAvailabilityDTO;
+import com.example.my_project.dto.users.BookingRequest;
+import com.example.my_project.dto.users.CourtAvailabilityDTO;
 import com.example.my_project.entity.Booking;
 
 import java.math.BigDecimal;
@@ -10,6 +10,11 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface IBookingService {
+
+    //lấy booking của user
+    List<Booking> getBookingsByUserId(Long userId);
+
+
     // 1. Truy vấn lịch trống
     List<CourtAvailabilityDTO> getAvailableCourts(Long variantId, LocalDate date, LocalTime startTime, LocalTime endTime);
 
