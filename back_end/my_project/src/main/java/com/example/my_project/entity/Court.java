@@ -23,7 +23,7 @@ public class Court {
     private StatusCourt status;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "variant_id", nullable = false)
     private CourtVariant courtVariant;
 }

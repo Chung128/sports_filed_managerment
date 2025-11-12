@@ -18,6 +18,11 @@ public class CourtService implements ICourtService {
     }
 
     @Override
+    public List<Court> getCourtsByVariant(Long variantId) {
+        return courtRepository.findByCourtVariantId(variantId);
+    }
+
+    @Override
     public List<CourtResponseDTO> getAllCourts() {
         return courtRepository.findAll().stream().map(court -> {
             CourtResponseDTO dto = new CourtResponseDTO();

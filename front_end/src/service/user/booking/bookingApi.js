@@ -119,27 +119,4 @@ export const getCourtType = (variantId) => {
     }
 };
 
-//hàm xử lí thời gian
-export const getTimeRangeForSelectedDate = (selectedDateString) => {
-    const today = new Date();
-    const selectedDate = new Date(selectedDateString);
-
-    let startTime;
-    let endTime = "22:30";
-
-    const isToday =
-        selectedDate.getFullYear() === today.getFullYear() &&
-        selectedDate.getMonth() === today.getMonth() &&
-        selectedDate.getDate() === today.getDate();
-
-    if (isToday) {
-        const hours = today.getHours().toString().padStart(2, "0");
-        const minutes = today.getMinutes().toString().padStart(2, "0");
-        startTime = `${hours}:${minutes}`;
-    } else {
-        startTime = "06:00";
-    }
-
-    return { startTime, endTime };
-};
 

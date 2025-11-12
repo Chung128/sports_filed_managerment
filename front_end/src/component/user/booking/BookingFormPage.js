@@ -198,12 +198,12 @@ export default function BookingFormPage() {
                                                     }
                                                     className={`p-4 rounded-2xl text-center text-sm font-semibold shadow-md transition-all cursor-pointer
                             ${isAvailable
-                                                            ? "bg-white border-2 border-green-500 hover:shadow-lg"
-                                                            : isPartiallyBooked
-                                                                ? "bg-orange-50 border-2 border-orange-400 hover:shadow-md"
-                                                                : court.status === "MAINTENANCE"
-                                                                    ? "bg-yellow-50 border border-yellow-300 opacity-70 cursor-not-allowed"
-                                                                    : "bg-gray-100 border border-gray-300 opacity-70 cursor-not-allowed"
+                                                        ? "bg-white border-2 border-green-500 hover:shadow-lg"
+                                                        : isPartiallyBooked
+                                                            ? "bg-orange-50 border-2 border-orange-400 hover:shadow-md"
+                                                            : court.status === "MAINTENANCE"
+                                                                ? "bg-yellow-50 border border-yellow-300 opacity-70 cursor-not-allowed"
+                                                                : "bg-gray-100 border border-gray-300 opacity-70 cursor-not-allowed"
                                                     }
                             ${
                                                         selectedCourtId === court.courtId

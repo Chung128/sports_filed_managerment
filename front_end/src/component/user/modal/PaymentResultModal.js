@@ -9,6 +9,14 @@ export default function PaymentResultModal({ isOpen, onClose, result }) {
 
     // Lớp CSS cho hiệu ứng rung nhẹ khi thất bại (tăng UX phản hồi)
     const failureAnimation = success ? "" : "animate-shake";
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("vi-VN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+    };
 
     return (
         // Backdrop mờ hơn, tạo chiều sâu
@@ -46,7 +54,7 @@ export default function PaymentResultModal({ isOpen, onClose, result }) {
                                 <span className="text-gray-600">Sân:</span> <strong>{courtName}</strong>
                             </p>
                             <p className="flex justify-between">
-                                <span className="text-gray-600">Ngày:</span> <strong>{date}</strong>
+                                <span className="text-gray-600">Ngày:</span> <strong>{formatDate(date)}</strong>
                             </p>
                             <p className="flex justify-between">
                                 <span className="text-gray-600">Giờ:</span> <strong>{time}</strong>
