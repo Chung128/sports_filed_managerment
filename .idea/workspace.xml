@@ -5,21 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1c031dd8-9daa-4a70-b556-4275a7e6a5fc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/CourtVariantService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/admin/modal/CourtModal.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/admin/modal/PriceModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/front_end/src/component/admin/modal/CourtHistoryModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/front_end/src/component/admin/modal/CustomerListModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/front_end/src/component/user/profile/UserBookingHistory.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/CourtController.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/CourtController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/Court.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/Court.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/CourtVariant.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/CourtVariant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/ICourtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/ICourtService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/CourtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/CourtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/security_config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/security_config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/src/component/admin/modal/CourtModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/admin/modal/CourtModal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/src/component/admin/pages/Dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/admin/pages/Dashboard.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front_end/src/component/admin/pages/Fields.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/admin/pages/Fields.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/booking/BookingFormPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/booking/BookingFormPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/booking/BookingPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/booking/BookingPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/modal/BookingTimeModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/modal/BookingTimeModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/modal/PaymentResultModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/modal/PaymentResultModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/service/admin/field_information/fieldApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/service/admin/field_information/fieldApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/src/component/admin/pages/Users.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/admin/pages/Users.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/Profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/profile/Profile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/src/service/admin/data.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/service/admin/data.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/src/service/admin/user_information/usersApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/service/admin/user_information/usersApi.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front_end/src/service/user/booking/bookingApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/service/user/booking/bookingApi.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -126,7 +125,8 @@
       <workItem from="1762737193760" duration="16792000" />
       <workItem from="1762823568127" duration="8009000" />
       <workItem from="1762842605576" duration="7640000" />
-      <workItem from="1762910032993" duration="3423000" />
+      <workItem from="1762910032993" duration="4450000" />
+      <workItem from="1762929168374" duration="6195000" />
     </task>
     <servers />
   </component>

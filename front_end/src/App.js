@@ -155,7 +155,7 @@ import Navbar from "./component/pages/layout/Navbar";
 import Footer from "./component/pages/layout/Footer";
 import Home from "./component/pages/Home";
 import AboutUs from "./component/pages/AboutUs";
-import Profile from "./component/user/Profile";
+import Profile from "./component/user/profile/Profile";
 import { AuthProvider } from "./service/user/context/authContext";
 
 // --- Admin pages ---
@@ -173,6 +173,7 @@ import Register from "./component/user/login/Register";
 import VerifyOtp from "./component/user/login/VerifyOtp";
 import LoginPage from "./component/user/login/LoginPage";
 import {NotFoundPage} from "./component/pages/error/ErrorPage";
+import UserBookingHistory from "./component/user/profile/UserBookingHistory";
 //import NotFound from "./component/admin/pages/NotFound";
 
 // Scroll to top khi đổi route
@@ -287,6 +288,7 @@ function App() {
                                         </AuthProvider>
                                     }
                                 />
+                                <Route path="/booking-history" element={<UserBookingHistory />} />
                             </Routes>
                         </AppLayout>
                     }

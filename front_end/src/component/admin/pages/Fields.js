@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { Grid3x3, Wrench, CheckCircle, DollarSign, Eye } from "lucide-react";
 import {
-    Grid3x3,
-    Wrench,
-    CheckCircle,
-    TrendingUp,
-    DollarSign,
-    Eye
-} from "lucide-react";
-import {getAllCourtTypes, getCourtsByVariant} from "../../../service/admin/field_information/fieldApi";
+    getAllCourtTypes,
+    getCourtsByVariant,
+} from "../../../service/admin/field_information/fieldApi";
 import { getPrice } from "../../../service/user/booking/bookingApi";
 import PriceModal from "../modal/PriceModal";
 import CourtsModal from "../modal/CourtModal";
@@ -22,7 +18,17 @@ const Fields = () => {
     const [showCourtsModal, setShowCourtsModal] = useState(null);
     const [courts, setCourts] = useState([]);
 
-    // ✅ Gọi API lấy danh sách CourtVariant
+    // ✅ Thêm state lưu số sân của từng loại
+    const [courtCounts, setCourtCounts] = useState({});
+
+    // Thêm state thống kê tổng hợp
+    const [courtStats, setCourtStats] = useState({
+        total: 0,
+        available: 0,
+        maintenance: 0,
+    });
+
+    // ✅ Gọi API lấy danh sách loại sân
     useEffect(() => {
         const fetchFields = async () => {
             try {
@@ -39,7 +45,7 @@ const Fields = () => {
         fetchFields();
     }, []);
 
-    // ✅ Lấy giá từng loại sân
+    // ✅ Gọi API để lấy giá từng loại sân
     useEffect(() => {
         const fetchPrices = async () => {
             if (fields.length === 0) return;
@@ -59,7 +65,7 @@ const Fields = () => {
 
                     const lowPeakPriceWeekend = await getPrice({
                         variantId: field.id,
-                        date: "2025-10-19", // Chủ nhật
+                        date: "2025-10-19",
                         startTime: lowPeakTime.startTime,
                         endTime: lowPeakTime.endTime,
                     });
@@ -87,6 +93,43 @@ const Fields = () => {
         fetchPrices();
     }, [fields]);
 
+    // ✅ Tính tổng số sân theo trạng thái & từng loại
+    useEffect(() => {
+        const fetchCourtStats = async () => {
+            try {
+                let allCourts = [];
+                const counts = {};
+
+                for (const field of fields) {
+                    const courtsOfVariant = await getCourtsByVariant(field.id);
+                    allCourts = [...allCourts, ...courtsOfVariant];
+
+                    // lưu số lượng sân từng loại
+                    counts[field.id] = courtsOfVariant.length;
+                }
+
+                const total = allCourts.length;
+                const available = allCourts.filter(
+                    (c) =>
+                        c.status?.toLowerCase() === "available" ||
+                        c.status?.toLowerCase() === "hoạt động"
+                ).length;
+                const maintenance = allCourts.filter(
+                    (c) =>
+                        c.status?.toLowerCase() === "maintenance" ||
+                        c.status?.toLowerCase() === "bảo trì"
+                ).length;
+
+                setCourtStats({ total, available, maintenance });
+                setCourtCounts(counts); // ✅ lưu số lượng từng loại
+            } catch (e) {
+                console.error("Lỗi khi tính thống kê sân:", e);
+            }
+        };
+
+        if (fields.length > 0) fetchCourtStats();
+    }, [fields]);
+
     const handleShowCourts = async (variantId) => {
         try {
             const data = await getCourtsByVariant(variantId);
@@ -103,7 +146,6 @@ const Fields = () => {
             currency: "VND",
         }).format(value || 0);
 
-    // ✅ Lọc theo loại sân
     const filteredFields =
         filterType === "all"
             ? fields
@@ -112,18 +154,6 @@ const Fields = () => {
     const courtTypeNames = [
         ...new Set(fields.map((f) => f.courtType?.name).filter(Boolean)),
     ];
-
-    const stats = {
-        total: fields.length,
-        avgPrice:
-            fields.length > 0
-                ? fields.reduce(
-                (sum, f) =>
-                    sum + (courtPrices[f.id]?.weekdayLowPeak || 0),
-                0
-            ) / fields.length
-                : 0,
-    };
 
     if (loading)
         return (
@@ -143,49 +173,45 @@ const Fields = () => {
         <div className="flex flex-col h-full w-full p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center gap-4 border-b sticky top-0 z-10 bg-white/80 backdrop-blur-md px-6 py-4 shadow-sm">
-                <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                     Quản Lý Sân
-                </div>
+                </h1>
             </div>
 
-            {/* Stats */}
+            {/* ✅ Thống kê tổng */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white shadow-lg border-l-4 border-l-blue-500 p-6 flex items-center justify-between">
                     <div>
                         <p className="text-sm text-gray-600 mb-1">Tổng số sân</p>
-                        <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+                        <p className="text-3xl font-bold text-gray-900">{courtStats.total}</p>
                     </div>
                     <div className="p-3 bg-blue-100 rounded-lg">
                         <Grid3x3 className="h-6 w-6 text-blue-600" />
                     </div>
                 </div>
 
-                <div className="bg-white shadow-lg border-l-4 border-l-purple-500 p-6 flex items-center justify-between">
+                <div className="bg-white shadow-lg border-l-4 border-l-green-500 p-6 flex items-center justify-between">
                     <div>
-                        <p className="text-sm text-gray-600 mb-1">Giá TB/giờ</p>
-                        <p className="text-xl font-bold text-gray-900">
-                            {formatCurrency(stats.avgPrice)}
-                        </p>
+                        <p className="text-sm text-gray-600 mb-1">Đang hoạt động</p>
+                        <p className="text-3xl font-bold text-green-600">{courtStats.available}</p>
                     </div>
-                    <div className="p-3 bg-purple-100 rounded-lg">
-                        <TrendingUp className="h-6 w-6 text-purple-600" />
+                    <div className="p-3 bg-green-100 rounded-lg">
+                        <CheckCircle className="h-6 w-6 text-green-600" />
                     </div>
                 </div>
 
-                <div className="bg-white shadow-lg border-l-4 border-l-green-500 p-6 flex items-center justify-between">
+                <div className="bg-white shadow-lg border-l-4 border-l-yellow-500 p-6 flex items-center justify-between">
                     <div>
-                        <p className="text-sm text-gray-600 mb-1">Loại sân</p>
-                        <p className="text-xl font-bold text-gray-900">
-                            {courtTypeNames.length}
-                        </p>
+                        <p className="text-sm text-gray-600 mb-1">Đang bảo trì</p>
+                        <p className="text-3xl font-bold text-yellow-600">{courtStats.maintenance}</p>
                     </div>
-                    <div className="p-3 bg-green-100 rounded-lg">
-                        <Wrench className="h-6 w-6 text-green-600" />
+                    <div className="p-3 bg-yellow-100 rounded-lg">
+                        <Wrench className="h-6 w-6 text-yellow-600" />
                     </div>
                 </div>
             </div>
 
-            {/* Filter */}
+            {/* Bộ lọc */}
             <div className="flex gap-2 bg-white shadow-md rounded-lg overflow-hidden">
                 {["all", ...courtTypeNames].map((type) => (
                     <button
@@ -200,8 +226,9 @@ const Fields = () => {
                         {type === "all"
                             ? `Tất cả (${fields.length})`
                             : `${type} (${
-                                fields.filter((f) => f.courtType?.name === type)
-                                    .length
+                                fields.filter(
+                                    (f) => f.courtType?.name === type
+                                ).length
                             })`}
                     </button>
                 ))}
@@ -217,17 +244,11 @@ const Fields = () => {
                         <div className="relative h-48 overflow-hidden">
                             <img
                                 src={
-                                    field.variantName
-                                        ?.toLowerCase()
-                                        .includes("bóng")
+                                    field.variantName?.toLowerCase().includes("bóng")
                                         ? "https://i.pinimg.com/736x/65/76/c3/6576c3573c5848e608c0a23449c64393.jpg"
-                                        : field.variantName
-                                            ?.toLowerCase()
-                                            .includes("pickle")
+                                        : field.variantName?.toLowerCase().includes("pickle")
                                             ? "https://i.pinimg.com/1200x/80/54/25/80542574b8a7ecfa590a6b99555aef13.jpg"
-                                            : field.variantName
-                                                ?.toLowerCase()
-                                                .includes("tennis")
+                                            : field.variantName?.toLowerCase().includes("tennis")
                                                 ? "https://i.pinimg.com/1200x/73/8b/5c/738b5ced30afe46eb40a329c02d35486.jpg"
                                                 : "https://via.placeholder.com/400x300?text=No+Image"
                                 }
@@ -246,15 +267,22 @@ const Fields = () => {
                         </div>
 
                         <div className="p-6 space-y-3">
+                            {/* ✅ Hiển thị tổng số sân */}
+                            <p className="text-sm text-gray-700 font-semibold">
+                                Tổng số sân:{" "}
+                                <span className="text-blue-600">
+                                    {courtCounts[field.id] ?? "Đang tải..."}
+                                </span>
+                            </p>
+
                             <p className="text-sm text-gray-600">
                                 Sức chứa:{" "}
                                 <span className="font-semibold text-gray-800">
                                     {field.capacity} người
                                 </span>
                             </p>
-                            <p className="text-sm text-gray-500">
-                                {field.description}
-                            </p>
+
+                            <p className="text-sm text-gray-500">{field.description}</p>
 
                             <div className="flex gap-3">
                                 <button
@@ -270,7 +298,6 @@ const Fields = () => {
                                     <DollarSign className="h-4 w-4" /> Xem giá
                                 </button>
                             </div>
-
                         </div>
                     </div>
                 ))}
@@ -288,11 +315,12 @@ const Fields = () => {
             {showCourtsModal && (
                 <CourtsModal
                     courts={courts}
-                    fieldName={fields.find((f) => f.id === showCourtsModal)?.variantName}
+                    fieldName={
+                        fields.find((f) => f.id === showCourtsModal)?.variantName
+                    }
                     onClose={() => setShowCourtsModal(null)}
                 />
             )}
-
         </div>
     );
 };

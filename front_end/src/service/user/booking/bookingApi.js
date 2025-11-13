@@ -57,7 +57,7 @@ export const createBooking = async (bookingData) => {
         throw new Error("Dữ liệu đặt sân không hợp lệ!");
     }
 
-    // ✅ Kiểm tra từng slot
+    //  Kiểm tra từng slot
     for (const slot of bookingData.timeSlots) {
         if (!slot.startTime || !slot.endTime) {
             throw new Error("Mỗi khung giờ phải có startTime và endTime!");
@@ -119,4 +119,29 @@ export const getCourtType = (variantId) => {
     }
 };
 
+export const getDynamicStatus = (booking) => {
+    const now = new Date();
+    const bookingDate = new Date(booking.date);
+
+    if (!booking.timeSlot || typeof booking.timeSlot !== "string") {
+        return "Chưa sử dụng";
+    }
+
+    const parts = booking.timeSlot.split("-").map((p) => p.trim());
+    const start = parts[0];
+    const end = parts[1] || null;
+
+    const [startHour, startMinute] = start.split(":").map(Number);
+    const [endHour, endMinute] = end ? end.split(":").map(Number) : [startHour + 1, startMinute || 0];
+
+    const startTime = new Date(bookingDate);
+    startTime.setHours(startHour, startMinute || 0, 0, 0);
+
+    const endTime = new Date(bookingDate);
+    endTime.setHours(endHour, endMinute || 0, 0, 0);
+
+    if (now < startTime) return "Chưa sử dụng";
+    if (now >= startTime && now <= endTime) return "Đang sử dụng";
+    return "Đã sử dụng";
+};
 

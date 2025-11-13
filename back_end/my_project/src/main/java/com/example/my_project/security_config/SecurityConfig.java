@@ -56,8 +56,8 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                    .requestMatchers("/api/auth/me").permitAll() // client có thể call /me to show anonymous or user
+                    .requestMatchers("/api/user/**","/api/auth/register", "/api/auth/login").permitAll()
+                    .requestMatchers("/api/auth/me").permitAll()
                     .requestMatchers("/api/v1/booking/payment-callback").permitAll() // VNPAY callback
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     // Các endpoint khác tuỳ bạn muốn strict hay open:

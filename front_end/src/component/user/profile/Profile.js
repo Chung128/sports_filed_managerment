@@ -9,11 +9,11 @@ import {
     LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
-import Preloader from "./../../ui/Preloader";
+import Preloader from "../../../ui/Preloader";
 import { Formik, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { getCurrentUser, updateUserProfile } from "../../service/user/login/authApi";
-import { useAuth } from "../../service/user/context/authContext";
+import { getCurrentUser, updateUserProfile } from "../../../service/user/login/authApi";
+import { useAuth } from "../../../service/user/context/authContext";
 
 export default function Profile() {
     const [isEditing, setIsEditing] = useState(false);

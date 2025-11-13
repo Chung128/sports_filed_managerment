@@ -1,8 +1,6 @@
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-// import {
-//     Search, Mail, Phone, Calendar, DollarSign, TrendingUp, Award, Users as UsersIcon
-// } from 'lucide-react';
+// import React, { useState, useEffect } from "react";
+// import { Search, Mail, Phone, Calendar, DollarSign, TrendingUp, Award, Users as UsersIcon } from "lucide-react";
+// import {fetchUserDetail, fetchUsers} from "../../../service/admin/user_information/usersApi";
 //
 // const Badge = ({ children, className }) => (
 //     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${className}`}>{children}</span>
@@ -18,42 +16,31 @@
 //     const [users, setUsers] = useState([]);
 //     const [loading, setLoading] = useState(true);
 //     const [error, setError] = useState(null);
-//     const [searchTerm, setSearchTerm] = useState('');
+//     const [searchTerm, setSearchTerm] = useState("");
 //     const [selectedUser, setSelectedUser] = useState(null);
 //     const [selectedUserData, setSelectedUserData] = useState(null);
 //     const [userBookings, setUserBookings] = useState([]);
 //
-//     // ✅ Load danh sách người dùng
 //     useEffect(() => {
-//         const token = localStorage.getItem('token');
-//         axios.get('http://localhost:8080/api/admin/users', {
-//             headers: { Authorization: `Bearer ${token}` }
-//         })
-//             .then(res => {
-//                 setUsers(res.data);
+//         fetchUsers()
+//             .then(data => {
+//                 setUsers(data);
 //                 setLoading(false);
 //             })
-//             .catch(err => {
-//                 console.error('Lỗi khi tải danh sách người dùng:', err);
-//                 setError('Không thể tải dữ liệu');
+//             .catch(() => {
+//                 setError("Không thể tải dữ liệu");
 //                 setLoading(false);
 //             });
 //     }, []);
 //
-//     // ✅ Khi chọn user → Gọi API lấy chi tiết
 //     useEffect(() => {
 //         if (!selectedUser) return;
-//         const token = localStorage.getItem('token');
-//
-//         fetch(`http://localhost:8080/api/admin/${selectedUser}/detail`, {
-//             headers: { Authorization: `Bearer ${token}` },
-//         })
-//             .then(res => res.json())
+//         fetchUserDetail(selectedUser)
 //             .then(data => {
 //                 setSelectedUserData(data);
 //                 setUserBookings(data.bookingHistory || []);
 //             })
-//             .catch(err => console.error('Lỗi khi tải chi tiết user:', err));
+//             .catch(() => {});
 //     }, [selectedUser]);
 //
 //     const filteredUsers = users.filter(user =>
@@ -63,16 +50,13 @@
 //     );
 //
 //     const formatCurrency = (value) =>
-//         new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+//         new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value);
 //
 //     const formatDate = (dateString) =>
-//         new Date(dateString).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+//         new Date(dateString).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
 //
 //     const getInitials = (name) =>
-//         name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-//
-//     if (loading) return <div className="p-10 text-center">Đang tải dữ liệu...</div>;
-//     if (error) return <div className="p-10 text-center text-red-600">{error}</div>;
+//         name?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 //
 //     const getCustomerLevel = (totalBookings) => {
 //         switch (true) {
@@ -87,12 +71,14 @@
 //         }
 //     };
 //
+//     if (loading) return <div className="p-10 text-center">Đang tải dữ liệu...</div>;
+//     if (error) return <div className="p-10 text-center text-red-600">{error}</div>;
 //
 //     return (
 //         <div className="flex flex-col h-full w-full">
 //             <header className="flex items-center sticky top-0 z-10 gap-4 border-b bg-white/80 backdrop-blur-md px-6 py-4 shadow-sm">
 //                 <div className="flex-1">
-//                     <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+//                     <h1 className="text-2xl font-bold text-gray-900">
 //                         Quản Lý Khách Hàng
 //                     </h1>
 //                     <p className="text-sm text-gray-500">Danh sách khách hàng từ hệ thống</p>
@@ -117,7 +103,7 @@
 //                                         type="text"
 //                                         placeholder="Tìm kiếm..."
 //                                         value={searchTerm}
-//                                         onChange={(e) => setSearchTerm(e.target.value)}
+//                                         onChange={e => setSearchTerm(e.target.value)}
 //                                         className="pl-10 w-full border-gray-300 rounded-lg focus:border-green-500 focus:ring-green-500"
 //                                     />
 //                                 </div>
@@ -140,7 +126,6 @@
 //                                                     <AvatarFallback className="text-white font-bold text-lg">{getInitials(user.name)}</AvatarFallback>
 //                                                 )}
 //                                             </Avatar>
-//
 //                                             <div className="flex-1 min-w-0">
 //                                                 <h4 className="font-semibold text-gray-900 truncate">{user.name}</h4>
 //                                                 <p className="text-sm text-gray-500 truncate">{user.phone}</p>
@@ -179,7 +164,6 @@
 //                                                 <p className="text-gray-600">{getCustomerLevel(selectedUserData.totalBookings)}</p>
 //                                             </div>
 //                                         </div>
-//
 //                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
 //                                             <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
 //                                                 <div className="p-2 bg-blue-500 rounded-lg"><Mail className="text-white" size={20} /></div>
@@ -268,10 +252,16 @@
 // };
 //
 // export default UsersComponent;
-
+//
 import React, { useState, useEffect } from "react";
-import { Search, Mail, Phone, Calendar, DollarSign, TrendingUp, Award, Users as UsersIcon } from "lucide-react";
-import {fetchUserDetail, fetchUsers} from "../../../service/admin/user_information/usersApi";
+import {
+    Search, Mail, Phone, Calendar, DollarSign,
+    TrendingUp, Award, Users as UsersIcon
+} from "lucide-react";
+import { fetchUserDetail, fetchUsers } from "../../../service/admin/user_information/usersApi";
+import CourtHistoryModal from "../modal/CourtHistoryModal";
+import CustomerListModal from "../modal/CustomerListModal";
+import {getDynamicStatus} from "../../../service/user/booking/bookingApi";
 
 const Badge = ({ children, className }) => (
     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${className}`}>{children}</span>
@@ -291,6 +281,8 @@ const UsersComponent = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [selectedUserData, setSelectedUserData] = useState(null);
     const [userBookings, setUserBookings] = useState([]);
+    const [showCourtModal, setShowCourtModal] = useState(false);
+    const [showCustomerModal, setShowCustomerModal] = useState(false);
 
     useEffect(() => {
         fetchUsers()
@@ -344,6 +336,12 @@ const UsersComponent = () => {
 
     if (loading) return <div className="p-10 text-center">Đang tải dữ liệu...</div>;
     if (error) return <div className="p-10 text-center text-red-600">{error}</div>;
+    const handleOpenCourtModal = () => setShowCourtModal(true);
+    const handleCloseCourtModal = () => setShowCourtModal(false);
+
+    const handleOpenCustomerModal = () => setShowCustomerModal(true);
+    const handleCloseCustomerModal = () => setShowCustomerModal(false);
+
 
     return (
         <div className="flex flex-col h-full w-full">
@@ -425,7 +423,9 @@ const UsersComponent = () => {
                                                         className="h-full w-full object-cover rounded-full"
                                                     />
                                                 ) : (
-                                                    <AvatarFallback className="text-white font-bold text-3xl">{getInitials(selectedUserData.name)}</AvatarFallback>
+                                                    <AvatarFallback className="text-white font-bold text-3xl">
+                                                        {getInitials(selectedUserData.name)}
+                                                    </AvatarFallback>
                                                 )}
                                             </Avatar>
                                             <div className="flex-1">
@@ -435,6 +435,8 @@ const UsersComponent = () => {
                                                 <p className="text-gray-600">{getCustomerLevel(selectedUserData.totalBookings)}</p>
                                             </div>
                                         </div>
+
+                                        {/* Thông tin chi tiết */}
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                                             <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
                                                 <div className="p-2 bg-blue-500 rounded-lg"><Mail className="text-white" size={20} /></div>
@@ -466,6 +468,7 @@ const UsersComponent = () => {
                                             </div>
                                         </div>
 
+                                        {/* Tổng chi tiêu */}
                                         <div className="mt-6 p-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-xl text-white flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm"><DollarSign size={32} /></div>
@@ -479,32 +482,75 @@ const UsersComponent = () => {
                                     </div>
                                 </div>
 
-                                {/* Lịch sử đặt sân */}
+                                {/* 🔹 Lịch sử đặt sân có trạng thái động (có tìm kiếm + xem tất cả + modal) */}
                                 <div className="shadow-lg rounded-xl p-6 bg-white">
-                                    <h3 className="text-xl font-bold mb-4">Lịch Sử Đặt Sân</h3>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-xl font-bold text-blue-700 flex items-center gap-2">
+                                            <Calendar className="h-5 w-5 text-blue-600" /> Lịch Sử Đặt Sân
+                                        </h3>
+
+                                        {/* Ô tìm kiếm */}
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => setShowCourtModal(true)}
+                                                className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+                                            >
+                                                Xem tất cả
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     {userBookings.length > 0 ? (
                                         <div className="space-y-3">
-                                            {userBookings.map(b => (
-                                                <div key={b.id} className="p-5 border-2 rounded-xl bg-white hover:shadow-lg transition-all hover:border-green-300">
-                                                    <div className="flex justify-between items-start mb-3">
-                                                        <div>
-                                                            <h4 className="font-bold text-lg text-gray-900">{b.fieldName}</h4>
-                                                            <p className="text-sm text-gray-500">{formatDate(b.date)} • {b.timeSlot}</p>
+                                            {userBookings
+                                                .filter((b) =>
+                                                    b.fieldName.toLowerCase().includes(searchTerm.toLowerCase())
+                                                )
+                                                .slice(0, 5)
+                                                .map((b) => {
+                                                    const dynamicStatus = getDynamicStatus(b);
+                                                    const statusColor =
+                                                        dynamicStatus === "Đang sử dụng"
+                                                            ? "bg-blue-100 text-blue-700"
+                                                            : dynamicStatus === "Đã sử dụng"
+                                                                ? "bg-gray-200 text-gray-700"
+                                                                : "bg-green-100 text-green-700";
+                                                    return (
+                                                        <div
+                                                            key={b.id}
+                                                            className="p-5 border-2 rounded-xl bg-white hover:shadow-lg transition-all hover:border-blue-300"
+                                                        >
+                                                            <div className="flex justify-between items-start mb-3">
+                                                                <div>
+                                                                    <h4 className="font-bold text-lg text-gray-900">
+                                                                        {b.fieldName}
+                                                                    </h4>
+                                                                    <p className="text-sm text-gray-500">
+                                                                        {formatDate(b.date)} • {b.timeSlot}
+                                                                    </p>
+                                                                </div>
+                                                                <Badge className={`${statusColor}`}>{dynamicStatus}</Badge>
+                                                            </div>
+                                                            <div className="flex justify-between items-center mt-4 pt-4 border-t">
+                                <span className="text-sm text-gray-600 font-medium">
+                                    {formatCurrency(b.price)}
+                                </span>
+                                                            </div>
                                                         </div>
-                                                        <Badge className={b.status === 'completed' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'}>
-                                                            {b.status === 'completed' ? 'Hoàn thành' : 'Đã xác nhận'}
-                                                        </Badge>
-                                                    </div>
-                                                    <div className="flex justify-between items-center mt-4 pt-4 border-t">
-                                                        <span className="text-sm text-gray-600 font-medium">{formatCurrency(b.price)}</span>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                    );
+                                                })}
+
+                                            {/* Nếu ít hơn 5 dòng, chèn khoảng trống để không co */}
+                                            {userBookings.length < 5 &&
+                                                Array.from({ length: 5 - userBookings.length }).map((_, i) => (
+                                                    <div key={`empty-${i}`} className="h-[100px] border-2 border-dashed rounded-xl" />
+                                                ))}
                                         </div>
                                     ) : (
                                         <p className="text-gray-500 italic">Chưa có lịch sử đặt sân.</p>
                                     )}
                                 </div>
+
                             </div>
                         ) : (
                             <div className="shadow-lg rounded-xl p-20 text-center">
@@ -512,11 +558,29 @@ const UsersComponent = () => {
                                     <Search className="h-16 w-16 text-green-600" />
                                 </div>
                                 <h3 className="text-2xl font-bold text-gray-900 mb-3">Chọn một khách hàng</h3>
-                                <p className="text-gray-600 text-lg">Chọn khách hàng từ danh sách bên trái để xem chi tiết và lịch sử đặt sân</p>
+                                <p className="text-gray-600 text-lg">
+                                    Chọn khách hàng từ danh sách bên trái để xem chi tiết và lịch sử đặt sân
+                                </p>
                             </div>
                         )}
                     </div>
                 </div>
+                {/* 🔷 Modal xem tất cả lịch sử đặt sân */}
+                {showCourtModal && (
+                    <CourtHistoryModal
+                        bookings={userBookings}
+                        onClose={() => setShowCourtModal(false)}
+                    />
+                )}
+
+                {/* 🔷 Modal xem danh sách khách hàng */}
+                {showCustomerModal && (
+                    <CustomerListModal
+                        users={users}
+                        onClose={() => setShowCustomerModal(false)}
+                    />
+                )}
+
             </main>
         </div>
     );

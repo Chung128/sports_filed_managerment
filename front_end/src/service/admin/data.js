@@ -46,11 +46,6 @@ export interface RevenueData {
     bookings: number;
 }
 
-export interface TimeSlot {
-    time: string;
-    available: boolean;
-    bookingId?: string;
-}
 
 export const fields: Field[] = [
     {

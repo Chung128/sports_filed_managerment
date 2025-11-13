@@ -1,13 +1,13 @@
 import axios from "axios";
 
-const API_BASE = "http://localhost:8080/api/admin";
+const API_BASE = "http://localhost:8080/api/";
 
 const getToken = () => localStorage.getItem("token");
 
 export const fetchUsers = async () => {
     try {
         const token = getToken();
-        const res = await axios.get(`${API_BASE}/users`, {
+        const res = await axios.get(`${API_BASE}admin/users`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return res.data;
@@ -20,7 +20,7 @@ export const fetchUsers = async () => {
 export const fetchUserDetail = async (userId) => {
     try {
         const token = getToken();
-        const res = await fetch(`${API_BASE}/${userId}/detail`, {
+        const res = await fetch(`${API_BASE}user/${userId}/detail`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Lỗi khi tải chi tiết user");

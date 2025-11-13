@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@RequestMapping("api/admin")
+@RequestMapping("/api")
 @RestController
 public class UserController {
     private final IUserService userService;
@@ -19,14 +19,14 @@ public class UserController {
     }
 
     //Lấy thông tin user
-    @GetMapping("/users")
+    @GetMapping("/admin/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
     }
 
 
     // Lấy thông tin 1 user theo id
-    @GetMapping("/{id}/add")
+    @GetMapping("/admin/{id}/add")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return userService.findById(id)
                 .map(ResponseEntity::ok)
@@ -40,7 +40,7 @@ public class UserController {
     }
 
     // Cập nhật user
-    @PutMapping("/{id}/update")
+    @PutMapping("/admin/{id}/update")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         return userService.findById(id)
                 .map(u -> {
@@ -51,20 +51,20 @@ public class UserController {
     }
 
     // Xóa mềm user
-    @DeleteMapping("/{id}/delete_soft")
+    @DeleteMapping("/admin/{id}/delete_soft")
     public ResponseEntity<Void> deleteSoftUser(@PathVariable Long id) {
         userService.deleteSoft(id);
         return ResponseEntity.noContent().build();
     }
 
     // Xóa mềm user
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/admin/{id}/delete")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/detail")
+    @GetMapping("/user/{id}/detail")
     public ResponseEntity<UserDetailDTO> getUserDetail(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserDetail(id));
     }

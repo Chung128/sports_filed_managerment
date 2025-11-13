@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 
-const CourtsModal = ({ courts, fieldName, onClose }) => {
+const CustomerListModal = ({ users, onClose }) => {
     const itemsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
 
-    const totalPages = Math.ceil(courts.length / itemsPerPage);
+    const totalPages = Math.ceil(users.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentCourts = courts.slice(startIndex, startIndex + itemsPerPage);
+    const currentRows = users.slice(startIndex, startIndex + itemsPerPage);
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) {
@@ -17,8 +17,8 @@ const CourtsModal = ({ courts, fieldName, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-3xl relative flex flex-col">
-                {/* Nút X đóng */}
+            <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-4xl relative flex flex-col">
+                {/* Nút đóng */}
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition"
@@ -28,79 +28,65 @@ const CourtsModal = ({ courts, fieldName, onClose }) => {
                 </button>
 
                 {/* Header */}
-                <h3 className="text-2xl font-bold text-blue-700 text-center mb-2">
-                    🏟️ Danh Sách Sân
+                <h3 className="text-2xl font-bold text-blue-700 text-center mb-6">
+                    👥 Danh Sách Khách Hàng
                 </h3>
-                <p className="text-center font-semibold text-gray-800 mb-6">
-                    {fieldName}
-                </p>
 
-                {/* Table */}
+                {/* Bảng */}
                 <div className="overflow-x-auto rounded-lg border border-blue-200 shadow-sm flex-1">
                     <table className="min-w-full divide-y divide-blue-200 text-sm text-gray-700">
                         <thead className="bg-blue-600 text-white sticky top-0">
                         <tr>
                             <th className="px-4 py-3 text-left font-semibold">STT</th>
-                            <th className="px-4 py-3 text-left font-semibold">Tên sân</th>
-                            <th className="px-4 py-3 text-center font-semibold">Trạng thái</th>
+                            <th className="px-4 py-3 text-left font-semibold">Tên khách hàng</th>
+                            <th className="px-4 py-3 text-left font-semibold">Số điện thoại</th>
+                            <th className="px-4 py-3 text-left font-semibold">Email</th>
                         </tr>
                         </thead>
                         <tbody
                             className="bg-white"
-                            style={{ minHeight: `${itemsPerPage * 48}px` }} // 👈 ép chiều cao
+                            style={{ minHeight: `${itemsPerPage * 48}px` }}
                         >
-                        {currentCourts.length > 0 ? (
-                            currentCourts.map((court, index) => (
+                        {currentRows.length > 0 ? (
+                            currentRows.map((u, i) => (
                                 <tr
-                                    key={court.id}
+                                    key={u.id || i}
                                     className="border-b hover:bg-blue-50 transition-colors"
                                     style={{ height: "48px" }}
                                 >
                                     <td className="px-4 py-3 font-medium">
-                                        {startIndex + index + 1}
+                                        {startIndex + i + 1}
                                     </td>
-                                    <td className="px-4 py-3 font-semibold">
-                                        {court.courtName || court.name}
-                                    </td>
-                                    <td className="px-4 py-3 text-center">
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                                    court.status === "AVAILABLE"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : "bg-red-100 text-red-600"
-                                                }`}
-                                            >
-                                                {court.status === "AVAILABLE"
-                                                    ? "Hoạt động"
-                                                    : "Bảo trì"}
-                                            </span>
-                                    </td>
+                                    <td className="px-4 py-3 font-semibold">{u.name || "—"}</td>
+                                    <td className="px-4 py-3">{u.phone || "—"}</td>
+                                    <td className="px-4 py-3">{u.email || "—"}</td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
                                 <td
-                                    colSpan="3"
+                                    colSpan="4"
                                     className="text-center py-6 text-gray-500 italic"
                                 >
-                                    Không có sân nào.
+                                    Không có khách hàng nào.
                                 </td>
                             </tr>
                         )}
-                        {/* 👇 Thêm các dòng trống nếu ít hơn 5 dòng */}
-                        {currentCourts.length < itemsPerPage &&
+
+                        {/* Dòng trống để giữ chiều cao */}
+                        {currentRows.length < itemsPerPage &&
                             Array.from({
-                                length: itemsPerPage - currentCourts.length,
+                                length: itemsPerPage - currentRows.length,
                             }).map((_, i) => (
                                 <tr key={`empty-${i}`} className="border-b">
-                                    <td colSpan="3" style={{ height: "48px" }}></td>
+                                    <td colSpan="4" style={{ height: "48px" }}></td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
 
-                {/* Pagination */}
+                {/* Phân trang */}
                 {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2 mt-4">
                         <button
@@ -147,4 +133,4 @@ const CourtsModal = ({ courts, fieldName, onClose }) => {
     );
 };
 
-export default CourtsModal;
+export default CustomerListModal;
