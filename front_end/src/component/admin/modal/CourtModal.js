@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import {Unlock,Lock, X} from "lucide-react";
+import {updateCourtStatus} from "../../../service/admin/field_information/fieldApi";
+import toast from "react-hot-toast";
 
-const CourtsModal = ({ courts, fieldName, onClose }) => {
+const CourtsModal = ({ courts: initialCourts, fieldName, onClose }) => {
     const itemsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
 
+    const [courts, setCourts] = useState(initialCourts);
     const totalPages = Math.ceil(courts.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentCourts = courts.slice(startIndex, startIndex + itemsPerPage);
@@ -12,6 +15,31 @@ const CourtsModal = ({ courts, fieldName, onClose }) => {
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) {
             setCurrentPage(page);
+        }
+    };
+
+    const handleStatusChange = async (court) => {
+        const nextStatus = court.status === "AVAILABLE" ? "MAINTENANCE" : "AVAILABLE";
+
+        try {
+            const res = await updateCourtStatus(court.id, nextStatus);
+
+            toast.success("Cập nhật trạng thái thành công!", {
+                duration: 3000,
+            });
+
+            // Cập nhật UI ngay lập tức
+            setCourts((prev) =>
+                prev.map((c) =>
+                    c.id === court.id ? { ...c, status: nextStatus } : c
+                )
+            );
+        } catch (err) {
+            if (err.response?.status === 409) {
+                toast.error(err.response.data.message, { duration: 3000 });
+            } else {
+                toast.error("Lỗi khi cập nhật trạng thái sân", { duration: 3000 });
+            }
         }
     };
 
@@ -43,50 +71,47 @@ const CourtsModal = ({ courts, fieldName, onClose }) => {
                             <th className="px-4 py-3 text-left font-semibold">STT</th>
                             <th className="px-4 py-3 text-left font-semibold">Tên sân</th>
                             <th className="px-4 py-3 text-center font-semibold">Trạng thái</th>
+                            <th className="px-4 py-3 text-center font-semibold">Hành động</th>
                         </tr>
                         </thead>
                         <tbody
                             className="bg-white"
-                            style={{ minHeight: `${itemsPerPage * 48}px` }} // 👈 ép chiều cao
+                            style={{ minHeight: `${itemsPerPage * 48}px` }} //  ép chiều cao
                         >
-                        {currentCourts.length > 0 ? (
-                            currentCourts.map((court, index) => (
-                                <tr
-                                    key={court.id}
-                                    className="border-b hover:bg-blue-50 transition-colors"
-                                    style={{ height: "48px" }}
-                                >
-                                    <td className="px-4 py-3 font-medium">
-                                        {startIndex + index + 1}
-                                    </td>
-                                    <td className="px-4 py-3 font-semibold">
-                                        {court.courtName || court.name}
-                                    </td>
-                                    <td className="px-4 py-3 text-center">
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                                    court.status === "AVAILABLE"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : "bg-red-100 text-red-600"
-                                                }`}
-                                            >
-                                                {court.status === "AVAILABLE"
-                                                    ? "Hoạt động"
-                                                    : "Bảo trì"}
-                                            </span>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td
-                                    colSpan="3"
-                                    className="text-center py-6 text-gray-500 italic"
-                                >
-                                    Không có sân nào.
+                        {currentCourts.map((court, index) => (
+                            <tr key={court.id} className="border-b hover:bg-blue-50 transition-colors">
+
+                                <td className="px-4 py-3 font-medium">
+                                    {startIndex + index + 1}
                                 </td>
+
+                                <td className="px-4 py-3 font-semibold">
+                                    {court.courtName || court.name}
+                                </td>
+
+                                <td className="px-4 py-3 text-center">
+                                        <span
+                                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                                court.status === "AVAILABLE"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-red-100 text-red-600"
+                                            }`}
+                                        >
+                                            {court.status === "AVAILABLE" ? "Hoạt động" : "Bảo trì"}
+                                        </span>
+                                </td>
+
+                                <td className="px-4 py-3 text-center">
+                                    <button
+                                        className="px-3 py-1 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                                        onClick={() => handleStatusChange(court)}
+                                    >
+                                        {court.status === "AVAILABLE" ? <Lock/> : <Unlock/>}
+                                    </button>
+                                </td>
+
                             </tr>
-                        )}
+                        ))}
                         {/* 👇 Thêm các dòng trống nếu ít hơn 5 dòng */}
                         {currentCourts.length < itemsPerPage &&
                             Array.from({

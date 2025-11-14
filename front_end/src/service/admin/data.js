@@ -40,11 +40,6 @@ export interface Booking {
     notes?: string;
 }
 
-export interface RevenueData {
-    date: string;
-    revenue: number;
-    bookings: number;
-}
 
 
 export const fields: Field[] = [
@@ -210,34 +205,10 @@ export const bookings: Booking[] = [
     ...generateBookingsForDate('2024-12-23', 16),
 ];
 
-export const revenueDataDaily: RevenueData[] = [
-    { date: '15/12', revenue: 2800000, bookings: 8 },
-    { date: '16/12', revenue: 3850000, bookings: 11 },
-    { date: '17/12', revenue: 3150000, bookings: 9 },
-    { date: '18/12', revenue: 4550000, bookings: 13 },
-    { date: '19/12', revenue: 4200000, bookings: 12 },
-    { date: '20/12', revenue: 5250000, bookings: 15 },
-    { date: '21/12', revenue: 4900000, bookings: 14 },
-];
-
-export const revenueDataMonthly: RevenueData[] = [
-    { date: 'T1', revenue: 52000000, bookings: 165 },
-    { date: 'T2', revenue: 58000000, bookings: 184 },
-    { date: 'T3', revenue: 54000000, bookings: 171 },
-    { date: 'T4', revenue: 61000000, bookings: 193 },
-    { date: 'T5', revenue: 68000000, bookings: 215 },
-    { date: 'T6', revenue: 64000000, bookings: 203 },
-    { date: 'T7', revenue: 74000000, bookings: 234 },
-    { date: 'T8', revenue: 71000000, bookings: 225 },
-    { date: 'T9', revenue: 66000000, bookings: 209 },
-    { date: 'T10', revenue: 78000000, bookings: 247 },
-    { date: 'T11', revenue: 75000000, bookings: 237 },
-    { date: 'T12', revenue: 82000000, bookings: 260 },
-];
 
 export const timeSlots = [
-    '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30',
-    '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
-    '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00'
+    '05:30', '06:30', '07:30', '08:30', '09:30',
+     '10:30', '11:30', '12:30', '13:30',
+     '14:30',  '15:30',  '16:30','17:30',
+    '18:30', '19:30',  '20:30',  '21:30'
 ];

@@ -1,12 +1,11 @@
 package com.example.my_project.controller;
 
 
-import com.example.my_project.dto.admin.CourtResponseDTO;
 import com.example.my_project.entity.Court;
-import com.example.my_project.entity.CourtType;
 import com.example.my_project.entity.CourtVariant;
+import com.example.my_project.enums.StatusCourt;
 import com.example.my_project.service.ICourtService;
-import com.example.my_project.service.ICourtTypeService;
+
 import com.example.my_project.service.ICourtVariantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +17,23 @@ import java.util.List;
 public class CourtController {
 
     private final ICourtService courtService;
-    private final ICourtTypeService courtTypeService;
     private final ICourtVariantService courtVariantService;
 
-    public CourtController(ICourtService courtService, ICourtTypeService courtTypeService, ICourtVariantService courtVariantService) {
+    public CourtController(ICourtService courtService, ICourtVariantService courtVariantService) {
         this.courtService = courtService;
-        this.courtTypeService = courtTypeService;
         this.courtVariantService = courtVariantService;
     }
 
-    @GetMapping
-    public List<CourtResponseDTO> getAllCourts() {
-        return courtService.getAllCourts();
+    //đổi trang thái sân
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateCourtStatus(
+            @PathVariable Long id,
+            @RequestParam("status") StatusCourt status
+    ) {
+        return courtService.toggleStatus(id, status);
     }
+
+
 
     @GetMapping("/variant/{variantId}")
     public ResponseEntity<List<Court>> getCourtsByVariant(@PathVariable Long variantId) {
@@ -43,8 +46,4 @@ public class CourtController {
         return courtVariantService.getAllCourtVariants();
     }
 
-    @GetMapping("/{id}")
-    public CourtResponseDTO getCourtById(@PathVariable Long id) {
-        return courtService.getCourtById(id);
-    }
 }

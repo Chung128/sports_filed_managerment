@@ -10,6 +10,10 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface IBookingService {
+    //lấy cả
+    List<Booking> findAll();
+    // tìm kiếm theo tên sân
+    List<Booking> searchByFieldName(String keyword);
 
     //lấy booking của user
     List<Booking> getBookingsByUserId(Long userId);

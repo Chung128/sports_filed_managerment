@@ -248,7 +248,7 @@ const AdminLayout = () => {
                     <Routes>
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/schedule" element={<Schedule />} />
-                        <Route path="/bookings" element={<Bookings />} />
+                        {/*<Route path="/bookings" element={<Bookings />} />*/}
                         <Route path="/fields" element={<Fields />} />
                         <Route path="/users" element={<Users />} />
                         {/*<Route path="*" element={<NotFoundPage />} />*/}

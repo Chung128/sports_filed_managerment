@@ -38,7 +38,7 @@ export function AppSidebar() {
     const menuItems = [
         { title: "Tổng Quan", icon: LayoutDashboard, href: "/admin", description: "Dashboard & Thống kê" },
         { title: "Lịch Đặt Sân", icon: Clock, href: "/admin/schedule", description: "Xem theo ngày & giờ" },
-        { title: "Quản Lý Đặt Sân", icon: Calendar, href: "/admin/bookings", description: "Danh sách booking" },
+        //{ title: "Quản Lý Đặt Sân", icon: Calendar, href: "/admin/bookings", description: "Danh sách booking" },
         { title: "Quản Lý Sân", icon: Grid3x3, href: "/admin/fields", description: "Thông tin sân bóng" },
         { title: "Khách Hàng", icon: Users, href: "/admin/users", description: "Quản lý người dùng" },
     ];

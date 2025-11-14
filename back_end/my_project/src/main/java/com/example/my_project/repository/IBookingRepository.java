@@ -11,6 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IBookingRepository extends JpaRepository<Booking, Long> {
+    //kiểm tra thanh toán
+    @Query("SELECT b FROM Booking b WHERE b.court.id = :courtId AND b.paymentStatus = 'PAID'")
+    List<Booking> findActiveBookingsByCourtId(@Param("courtId") Long courtId);
+
+
+    // tìm kiếm tên sân
+    @Query("SELECT b FROM Booking b WHERE LOWER(b.court.courtVariant.variantName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Booking> searchByFieldName(String keyword);
 
     // Lấy tất cả booking của user (chưa bị xóa mềm nếu có cột softDelete)
     @Query("SELECT b FROM Booking b WHERE b.user.id = :userId ORDER BY b.specificDate DESC, b.hourlyStartTime ASC")

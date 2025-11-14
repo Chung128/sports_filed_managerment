@@ -512,100 +512,100 @@ public class BookingService implements IBookingService {
 
     // Trong BookingService.java
 
-@Override
-@Transactional
-public Booking createBooking(BookingRequest request, String paymentStatus, String transactionId) throws Exception {
-    if (request.getCourtId() == null || request.getBookingTypeId() == null || request.getSpecificDate() == null) {
-        throw new IllegalArgumentException("Dữ liệu không đầy đủ");
-    }
-
-    if (!"PAID".equals(paymentStatus)) {
-        throw new IllegalStateException("Thanh toán chưa thành công");
-    }
-
-    // === ƯU TIÊN 1: DÙNG userId TỪ REQUEST (AN TOÀN NHẤT CHO CALLBACK) ===
-    User user = null;
-    if (request.getUserId() != null) {
-        user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy userId: " + request.getUserId()));
-        logger.info("Loaded user from request.userId = {}", request.getUserId());
-    }
-    // === ƯU TIÊN 2: MỚI DÙNG JWT (chỉ khi gọi từ API nội bộ, không phải callback) ===
-    else {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
-            logger.error("No valid user in JWT and no userId in request. txnId={}", transactionId);
-            throw new IllegalStateException("Không thể xác định người dùng. Vui lòng thử lại.");
-        }
-        String username = auth.getName();
-        user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy user: " + username));
-        logger.info("Loaded user from JWT: {}", username);
-    }
-
-    // === TIẾP TỤC NHƯ CŨ ===
-    List<BookingRequest.TimeSlot> slots = request.getTimeSlots();
-    if (slots == null || slots.isEmpty()) {
-        throw new IllegalArgumentException("Chưa chọn khung giờ");
-    }
-
-    BigDecimal totalAmount = BigDecimal.ZERO;
-    List<Booking> createdBookings = new ArrayList<>();
-
-    for (BookingRequest.TimeSlot slot : slots) {
-        List<Booking> conflicts = bookingRepository.findTimeConflictsForHourly(
-                request.getCourtId(), request.getSpecificDate(), slot.getStartTime(), slot.getEndTime()
-        );
-        if (!conflicts.isEmpty()) {
-            throw new IllegalStateException("Khung giờ " + slot.getStartTime() + " - " + slot.getEndTime() + " đã được đặt");
+    @Override
+    @Transactional
+    public Booking createBooking(BookingRequest request, String paymentStatus, String transactionId) throws Exception {
+        if (request.getCourtId() == null || request.getBookingTypeId() == null || request.getSpecificDate() == null) {
+            throw new IllegalArgumentException("Dữ liệu không đầy đủ");
         }
 
-        BigDecimal price = calculatePrice(
-                courtRepository.findById(request.getCourtId()).get().getCourtVariant().getId(),
-                request.getSpecificDate(),
-                slot.getStartTime(),
-                slot.getEndTime()
+        if (!"PAID".equals(paymentStatus)) {
+            throw new IllegalStateException("Thanh toán chưa thành công");
+        }
+
+        // === ƯU TIÊN 1: DÙNG userId TỪ REQUEST (AN TOÀN NHẤT CHO CALLBACK) ===
+        User user = null;
+        if (request.getUserId() != null) {
+            user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy userId: " + request.getUserId()));
+            logger.info("Loaded user from request.userId = {}", request.getUserId());
+        }
+        // === ƯU TIÊN 2: MỚI DÙNG JWT (chỉ khi gọi từ API nội bộ, không phải callback) ===
+        else {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+                logger.error("No valid user in JWT and no userId in request. txnId={}", transactionId);
+                throw new IllegalStateException("Không thể xác định người dùng. Vui lòng thử lại.");
+            }
+            String username = auth.getName();
+            user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy user: " + username));
+            logger.info("Loaded user from JWT: {}", username);
+        }
+
+        // === TIẾP TỤC NHƯ CŨ ===
+        List<BookingRequest.TimeSlot> slots = request.getTimeSlots();
+        if (slots == null || slots.isEmpty()) {
+            throw new IllegalArgumentException("Chưa chọn khung giờ");
+        }
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        List<Booking> createdBookings = new ArrayList<>();
+
+        for (BookingRequest.TimeSlot slot : slots) {
+            List<Booking> conflicts = bookingRepository.findTimeConflictsForHourly(
+                    request.getCourtId(), request.getSpecificDate(), slot.getStartTime(), slot.getEndTime()
+            );
+            if (!conflicts.isEmpty()) {
+                throw new IllegalStateException("Khung giờ " + slot.getStartTime() + " - " + slot.getEndTime() + " đã được đặt");
+            }
+
+            BigDecimal price = calculatePrice(
+                    courtRepository.findById(request.getCourtId()).get().getCourtVariant().getId(),
+                    request.getSpecificDate(),
+                    slot.getStartTime(),
+                    slot.getEndTime()
+            );
+            totalAmount = totalAmount.add(price);
+
+            Booking booking = new Booking();
+            booking.setCourt(courtRepository.findById(request.getCourtId()).orElseThrow());
+            booking.setBookingType(bookingTypeRepository.findById(request.getBookingTypeId()).orElseThrow());
+            booking.setUser(user);
+            booking.setBookingDate(LocalDateTime.now());
+            booking.setTotalAmount(price);
+            booking.setPaymentStatus("PAID");
+            booking.setSpecificDate(request.getSpecificDate());
+            booking.setHourlyStartTime(slot.getStartTime());
+            booking.setHourlyEndTime(slot.getEndTime());
+            booking.setNote(request.getNote());
+
+            Booking saved = bookingRepository.save(booking);
+            createdBookings.add(saved);
+        }
+
+        Payment payment = new Payment();
+        payment.setAmount(totalAmount);
+        payment.setPaymentMethod(PaymentMethod.VNPAY);
+        payment.setStatus(PaymentStatus.PAID);
+        payment.setUser(user);
+        payment.setBooking(createdBookings.get(0));
+        paymentRepository.save(payment);
+
+        Court court = courtRepository.findById(request.getCourtId()).orElseThrow();
+        emailService.sendBookingConfirmationEmail(
+                user.getEmail(),
+                user.getUsername(),
+                createdBookings.stream().map(b -> b.getId().toString()).collect(Collectors.joining(", ")),
+                court.getName(),
+                request.getSpecificDate().toString(),
+                slots.stream().map(s -> s.getStartTime() + "-" + s.getEndTime()).collect(Collectors.joining(", ")),
+                totalAmount,
+                "PAID"
         );
-        totalAmount = totalAmount.add(price);
 
-        Booking booking = new Booking();
-        booking.setCourt(courtRepository.findById(request.getCourtId()).orElseThrow());
-        booking.setBookingType(bookingTypeRepository.findById(request.getBookingTypeId()).orElseThrow());
-        booking.setUser(user);
-        booking.setBookingDate(LocalDateTime.now());
-        booking.setTotalAmount(price);
-        booking.setPaymentStatus("PAID");
-        booking.setSpecificDate(request.getSpecificDate());
-        booking.setHourlyStartTime(slot.getStartTime());
-        booking.setHourlyEndTime(slot.getEndTime());
-        booking.setNote(request.getNote());
-
-        Booking saved = bookingRepository.save(booking);
-        createdBookings.add(saved);
+        return createdBookings.get(0);
     }
-
-    Payment payment = new Payment();
-    payment.setAmount(totalAmount);
-    payment.setPaymentMethod(PaymentMethod.VNPAY);
-    payment.setStatus(PaymentStatus.PAID);
-    payment.setUser(user);
-    payment.setBooking(createdBookings.get(0));
-    paymentRepository.save(payment);
-
-    Court court = courtRepository.findById(request.getCourtId()).orElseThrow();
-    emailService.sendBookingConfirmationEmail(
-            user.getEmail(),
-            user.getUsername(),
-            createdBookings.stream().map(b -> b.getId().toString()).collect(Collectors.joining(", ")),
-            court.getName(),
-            request.getSpecificDate().toString(),
-            slots.stream().map(s -> s.getStartTime() + "-" + s.getEndTime()).collect(Collectors.joining(", ")),
-            totalAmount,
-            "PAID"
-    );
-
-    return createdBookings.get(0);
-}
 
     @Override
     @Transactional
@@ -689,6 +689,19 @@ public Booking createBooking(BookingRequest request, String paymentStatus, Strin
             booking.setPaymentStatus("CANCELLED");
         }
         return bookingRepository.save(booking);
+    }
+
+    @Override
+    public List<Booking> findAll() {
+        return bookingRepository.findAll();
+    }
+
+    @Override
+    public List<Booking> searchByFieldName(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return bookingRepository.findAll();
+        }
+        return bookingRepository.searchByFieldName(keyword.trim());
     }
 
     @Override

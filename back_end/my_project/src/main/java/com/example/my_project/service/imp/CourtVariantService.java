@@ -17,6 +17,7 @@ public class CourtVariantService implements ICourtVariantService {
 
     @Override
     public List<CourtVariant> getAllCourtVariants() {
+        CourtVariant courtVariant = new CourtVariant();
         return repository.findAll();
     }
 }

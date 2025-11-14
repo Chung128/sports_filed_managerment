@@ -1,6 +1,7 @@
 package com.example.my_project.entity;
 
 import com.example.my_project.enums.StatusCourt;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +22,6 @@ public class Court {
 
     @Enumerated(EnumType.STRING)
     private StatusCourt status;
-
 
     @ManyToOne
     @JoinColumn(name = "variant_id", nullable = false)

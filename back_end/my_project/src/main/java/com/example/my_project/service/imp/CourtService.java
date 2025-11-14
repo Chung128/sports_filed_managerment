@@ -1,20 +1,28 @@
 package com.example.my_project.service.imp;
 
-
-import com.example.my_project.dto.admin.CourtResponseDTO;
+import com.example.my_project.entity.Booking;
 import com.example.my_project.entity.Court;
+import com.example.my_project.enums.StatusCourt;
+import com.example.my_project.repository.IBookingRepository;
 import com.example.my_project.repository.ICourtRepository;
 import com.example.my_project.service.ICourtService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourtService implements ICourtService {
     private final ICourtRepository courtRepository;
+    private final IBookingRepository bookingRepository;
 
-    public CourtService(ICourtRepository courtRepository) {
+    public CourtService(ICourtRepository courtRepository, IBookingRepository bookingRepository) {
         this.courtRepository = courtRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -22,52 +30,59 @@ public class CourtService implements ICourtService {
         return courtRepository.findByCourtVariantId(variantId);
     }
 
-    @Override
-    public List<CourtResponseDTO> getAllCourts() {
-        return courtRepository.findAll().stream().map(court -> {
-            CourtResponseDTO dto = new CourtResponseDTO();
-            dto.setId(court.getId());
-            dto.setName(court.getName());
-            dto.setType(court.getCourtVariant().getVariantName());
-            dto.setDescription(court.getCourtVariant().getDescription());
-            dto.setStatus(court.getStatus());
-            dto.setPricePerHour(getPriceByVariant(court.getCourtVariant().getVariantName())); // giả lập giá
-            dto.setImage(getImageByVariant(court.getCourtVariant().getVariantName())); // giả lập ảnh
-            return dto;
-        }).toList();
-    }
 
     @Override
-    public CourtResponseDTO getCourtById(Long id) {
+    public ResponseEntity<?> toggleStatus(Long id, StatusCourt newStatus) {
+
         Court court = courtRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sân"));
-        return new CourtResponseDTO(
-                court.getId(),
-                court.getName(),
-                court.getCourtVariant().getVariantName(),
-                getPriceByVariant(court.getCourtVariant().getVariantName()),
-                court.getStatus(),
-                getImageByVariant(court.getCourtVariant().getVariantName()),
-                court.getCourtVariant().getDescription()
-        );
+                .orElseThrow(() -> new RuntimeException("Court not found"));
+
+        if (court.getStatus() == newStatus) {
+            return ResponseEntity.ok(Map.of(
+                    "message", "Trạng thái đã đúng, không cần cập nhật."
+            ));
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        List<Booking> activeBookings = bookingRepository.findActiveBookingsByCourtId(id);
+
+        boolean hasFutureBooking = activeBookings.stream().anyMatch(booking -> {
+
+            // ⭐ 1) Booking theo giờ (Hourly)
+            if (booking.getSpecificDate() != null) {
+
+                // Booking trong quá khứ hoàn toàn → KHÔNG chặn
+                if (booking.getSpecificDate().isBefore(today)) return false;
+
+                // Booking hôm nay → cần kiểm tra giờ
+                if (booking.getSpecificDate().isEqual(today)) {
+                    return booking.getHourlyEndTime() != null &&
+                            booking.getHourlyEndTime().isAfter(now); // endTime > now → CHẶN
+                }
+
+                // Booking ngày tương lai → CHẶN
+                return booking.getSpecificDate().isAfter(today);
+            }
+
+            return false;
+        });
+
+        if (hasFutureBooking) {
+            return ResponseEntity.status(409).body(Map.of(
+                    "message", "Sân đang có lịch đặt sắp diễn ra hoặc trong tương lai, không thể đổi trạng thái."
+            ));
+        }
+
+        court.setStatus(newStatus);
+        courtRepository.save(court);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Cập nhật trạng thái sân thành công!",
+                "newStatus", newStatus
+        ));
     }
 
-    // Giả lập giá theo loại sân
-    private Double getPriceByVariant(String variant) {
-        if (variant.contains("5")) return 350000.0;
-        if (variant.contains("7")) return 500000.0;
-        if (variant.contains("11")) return 900000.0;
-        return 400000.0;
-    }
 
-    // Giả lập ảnh minh họa theo loại sân
-    private String getImageByVariant(String variant) {
-        if (variant.contains("5"))
-            return "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400";
-        if (variant.contains("7"))
-            return "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=400";
-        if (variant.contains("11"))
-            return "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400";
-        return "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400";
-    }
 }

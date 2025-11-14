@@ -26,16 +26,16 @@ public class Booking {
     private String paymentStatus;
 
     // Phân loại Đặt sân ---
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "booking_type_id", nullable = false)
     private BookingType bookingType; // Liên kết tới bảng BookingType
 
     // Sân vật lý được đặt (chủ yếu là 1 sân/booking)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "court_id", nullable = false)
     private Court court;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id") // Tên cột Foreign Key trong bảng 'bookings'
     private User user;
 

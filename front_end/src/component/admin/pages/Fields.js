@@ -28,7 +28,7 @@ const Fields = () => {
         maintenance: 0,
     });
 
-    // ✅ Gọi API lấy danh sách loại sân
+    // Gọi API lấy danh sách loại sân
     useEffect(() => {
         const fetchFields = async () => {
             try {
@@ -45,7 +45,7 @@ const Fields = () => {
         fetchFields();
     }, []);
 
-    // ✅ Gọi API để lấy giá từng loại sân
+    //  Gọi API để lấy giá từng loại sân
     useEffect(() => {
         const fetchPrices = async () => {
             if (fields.length === 0) return;
@@ -93,7 +93,7 @@ const Fields = () => {
         fetchPrices();
     }, [fields]);
 
-    // ✅ Tính tổng số sân theo trạng thái & từng loại
+    //  Tính tổng số sân theo trạng thái & từng loại
     useEffect(() => {
         const fetchCourtStats = async () => {
             try {
@@ -178,7 +178,7 @@ const Fields = () => {
                 </h1>
             </div>
 
-            {/* ✅ Thống kê tổng */}
+            {/*  Thống kê tổng */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white shadow-lg border-l-4 border-l-blue-500 p-6 flex items-center justify-between">
                     <div>

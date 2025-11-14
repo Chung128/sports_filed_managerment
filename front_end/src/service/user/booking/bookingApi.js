@@ -2,6 +2,24 @@ import axios from "axios";
 
 const API_BASE = "http://localhost:8080/api/v1/booking";
 
+//hàm lấy booking
+export const fetchAllBookings = async () => {
+    const token =  localStorage.getItem("token");
+    const res = await axios.get(API_BASE, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data || [];
+};
+//hàm tìm kiếm
+export const searchBookingsByFieldName = async (keyword) => {
+    const token =  localStorage.getItem("token");
+    const res = await axios.get(`${API_BASE}/search`, {
+        params: { keyword },
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data || [];
+};
+//hàm lấy trang thái sân
 export const mapCourtStatus = (status) => {
     if (["AVAILABLE", "BOOKED_OR_IN_USE", "MAINTENANCE", "OUT_OF_SERVICE"].includes(status)) {
         return status;
@@ -9,7 +27,7 @@ export const mapCourtStatus = (status) => {
     return "UNKNOWN";
 };
 
-
+//hàm check sân trống
 export const checkAvailability = async (values) => {
     const res = await axios.get(`${API_BASE}/availability`, {
         params: {
@@ -44,6 +62,7 @@ export const getPrice = async (values) => {
     return res.data;
 };
 
+//hàm tạo booking
 export const createBooking = async (bookingData) => {
     //  Kiểm tra dữ liệu đầu vào
     if (
@@ -96,6 +115,7 @@ export const createBooking = async (bookingData) => {
         }
     }
 };
+
 // Hàm lấy nhãn trạng thái
 export const getStatusLabel = (status) => {
     switch (status) {
@@ -119,6 +139,7 @@ export const getCourtType = (variantId) => {
     }
 };
 
+//hàm lấy trạng thái sử dụng sân so với thời gian thực
 export const getDynamicStatus = (booking) => {
     const now = new Date();
     const bookingDate = new Date(booking.date);
