@@ -273,8 +273,8 @@ import * as Yup from "yup";
 import {FaEye, FaEyeSlash, FaFacebook} from "react-icons/fa";
 import {FcGoogle} from "react-icons/fc";
 import {jwtDecode} from "jwt-decode";
-import {loginApi} from "../../../service/user/login/authApi";
-
+import {googleLoginApi, loginApi} from "../../../service/user/login/authApi";
+import { GoogleLogin } from "@react-oauth/google";
 
 
 // Validation schema (GIỮ NGUYÊN LOGIC CỦA BẠN)
@@ -289,33 +289,6 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
-    // Hàm xử lý đăng nhập (GIỮ NGUYÊN LOGIC CỦA BẠN)
-    // const handleSubmit = async (values, { setSubmitting }) => {
-    //     try {
-    //         // SỬ DỤNG MOCK API
-    //         const res = await loginApi(values.username, values.password);
-    //         const token = res?.data?.token;
-    //
-    //         if (token) {
-    //             localStorage.setItem("token", token);
-    //             localStorage.setItem(
-    //                 "user",
-    //                 JSON.stringify({ username: values.username })
-    //             );
-    //             toast.success("Đăng nhập thành công!");
-    //             navigate("/");
-    //         } else {
-    //             toast.error("Không nhận được token từ máy chủ!");
-    //         }
-    //     } catch (err) {
-    //         console.error("Login Error:", err);
-    //         const errorMessage =
-    //             err.response?.data?.message || "Sai tên đăng nhập hoặc mật khẩu!";
-    //         toast.error(errorMessage);
-    //     } finally {
-    //         setSubmitting(false);
-    //     }
-    // };
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
             const res = await loginApi(values.username, values.password);
@@ -328,7 +301,7 @@ export default function LoginPage() {
                 const username = decoded?.sub || "unknown";
                 const role = decoded?.role || "USER";
 
-                // ✅ Lưu vào localStorage
+                // Lưu vào localStorage
                 localStorage.setItem("token", token);
                 localStorage.setItem("user", JSON.stringify({ username, role }));
 
@@ -398,7 +371,7 @@ export default function LoginPage() {
 
                             <Formik
                                 initialValues={{ username: "", password: "" }}
-                                validationSchema={validationSchema}
+                                 validationSchema={validationSchema}
                                 onSubmit={handleSubmit}
                             >
                                 {({ isSubmitting }) => (
@@ -491,13 +464,46 @@ export default function LoginPage() {
                                             <span className="text-gray-400 text-sm">hoặc đăng nhập bằng</span>
                                         </div>
                                         <div className="flex space-x-4">
-                                            <button
-                                                type="button"
-                                                className="flex-1 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition shadow-sm flex items-center justify-center space-x-2"
-                                            >
-                                                <FcGoogle className="text-2xl" /> {/* Icon Google đẹp màu đầy đủ */}
-                                                <span className="text-gray-700 font-medium">Google</span>
-                                            </button>
+                                            <div className="flex space-x-4">
+
+                                                {/* GOOGLE LOGIN */}
+                                                <div className="flex-1">
+                                                    <GoogleLogin
+                                                        onSuccess={async (credentialResponse) => {
+                                                            try {
+                                                                const googleToken = credentialResponse.credential; // Google ID Token
+
+                                                                const res = await googleLoginApi(googleToken);
+
+                                                                const token = res?.data?.token;
+
+                                                                if (token) {
+                                                                    const decoded = jwtDecode(token);
+
+                                                                    localStorage.setItem("token", token);
+                                                                    localStorage.setItem(
+                                                                        "user",
+                                                                        JSON.stringify({
+                                                                            username: decoded?.sub || decoded?.email,
+                                                                            role: decoded?.role || "USER",
+                                                                        })
+                                                                    );
+
+                                                                    toast.success("Đăng nhập Google thành công!");
+                                                                    navigate("/");
+                                                                }
+                                                            } catch (error) {
+                                                                console.error("Google Login BE Error:", error);
+                                                                toast.error("Đăng nhập Google thất bại!");
+                                                            }
+                                                        }}
+                                                        onError={() => {
+                                                            toast.error("Google không xác thực được. Vui lòng thử lại!");
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+
                                             <button
                                                 type="button"
                                                 className="flex-1 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition shadow-sm flex items-center justify-center space-x-2"

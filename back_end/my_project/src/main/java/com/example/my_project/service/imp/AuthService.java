@@ -6,10 +6,16 @@ import com.example.my_project.record.LoginRequest;
 import com.example.my_project.repository.IUserRepository;
 import com.example.my_project.security_config.JwtTokenProvider;
 import com.example.my_project.service.IAuthService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 public class AuthService implements IAuthService {
@@ -92,5 +98,109 @@ public class AuthService implements IAuthService {
         }
 
         return userRepository.save(user);
+    }
+
+//    @Override
+//    public String loginWithGoogle(String idToken) {
+//        try {
+//            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
+//                    .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+//                    .setAudience(Collections.singletonList("372998325078-1rtdln50u6o3apfgm294icrpru8itp5b.apps.googleusercontent.com")) // ⚠️ FE OAuth Client ID
+//                    .build();
+//
+//            GoogleIdToken googleIdToken = verifier.verify(idToken);
+//
+//            if (googleIdToken == null) {
+//                throw new RuntimeException("Invalid Google ID Token");
+//            }
+//
+//            GoogleIdToken.Payload payload = googleIdToken.getPayload();
+//
+//            String email = payload.getEmail();
+//            String name = (String) payload.get("name");
+//            String avatar = (String) payload.get("picture");
+//
+//            // Kiểm tra user đã tồn tại chưa?
+//            User user = userRepository.findByEmail(email).orElse(null);
+//
+//            if (user == null) {
+//                // Tạo user mới
+//                user = new User();
+//                user.setUsername(email); // username = email
+//                user.setEmail(email);
+//                user.setName(name);
+//                user.setAvatar(avatar);
+//                user.setRole(Role.USER);
+//                user.setPassword(passwordEncoder.encode("GOOGLE_USER")); // Fake password
+//                userRepository.save(user);
+//            }
+//
+//            // Generate JWT
+//            return jwtTokenProvider.generateToken(user);
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("Google login failed: " + e.getMessage());
+//        }
+//    }
+@Override
+public String loginWithGoogle(String idToken) {
+    try {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
+                .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList("372998325078-1rtdln50u6o3apfgm294icrpru8itp5b.apps.googleusercontent.com"))
+                .build();
+
+        GoogleIdToken googleIdToken = verifier.verify(idToken);
+
+        if (googleIdToken == null) {
+            throw new RuntimeException("Invalid Google ID Token");
+        }
+
+        GoogleIdToken.Payload payload = googleIdToken.getPayload();
+
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
+        String avatar = (String) payload.get("picture");
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+
+            user = new User();
+            user.setEmail(email);
+            user.setName(name);
+            user.setAvatar(avatar);
+            user.setRole(Role.USER);
+            user.setPassword(passwordEncoder.encode("GOOGLE_USER"));
+
+            // ⛔ DON'T USE email as username (violates @Pattern)
+            //user.setUsername(email);
+
+            // ✔ Create random username
+            user.setUsername("user" + System.currentTimeMillis());
+
+            // Google user enabled luôn
+            user.setEnabled(true);
+
+            userRepository.save(user);
+        }
+
+        return jwtTokenProvider.generateToken(user);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Google login failed: " + e.getMessage());
+    }
+}
+
+    @Override
+    public void changePassword(Long UserId, String oldPassword, String newPassword) {
+        User user=userRepository.findById(UserId)
+                .orElseThrow(() -> new RuntimeException("Người dừng không tồn tại"));
+        if (!passwordEncoder.matches(oldPassword,user.getPassword())){
+            throw new RuntimeException("Mật khẩu cũ không đúng");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        userRepository.save(user);
     }
 }

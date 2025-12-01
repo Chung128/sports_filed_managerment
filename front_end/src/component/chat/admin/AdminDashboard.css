@@ -1,0 +1,70 @@
+.admin-dashboard {
+    display: flex;
+    height: calc(100vh - 60px);
+    font-family: Arial, sans-serif;
+}
+
+.conv-list {
+    width: 320px;
+    border-right: 1px solid #e6e6e6;
+    padding: 12px;
+    background: #fafafa;
+    overflow-y: auto;
+}
+
+.conv-list h3 {
+    margin: 0 0 10px 0;
+}
+
+.conv-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.conv-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+}
+
+.conv-item.active {
+    background: #eef6ff;
+}
+
+.conv-item:hover {
+    background: #f3f7ff;
+}
+
+.conv-item .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.conv-meta {
+    flex: 1;
+}
+
+.conv-user {
+    font-weight: 600;
+}
+
+.conv-last {
+    font-size: 13px;
+    color: #777;
+}
+
+.unread-badge {
+    background: #ff3b30;
+    color: white;
+    padding: 6px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 12px;
+}

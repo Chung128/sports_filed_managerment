@@ -1,11 +1,11 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
 
 const api = axios.create({
-   // baseURL: process.env.NODE_ENV === "production" ? "http://backend:8080/api" : "http://localhost:8080/api",
-    baseURL:"http://localhost:8080/api",
-    headers: { "Content-Type": "application/json" },
+    // baseURL: process.env.NODE_ENV === "production" ? "http://backend:8080/api" : "http://localhost:8080/api",
+    baseURL: "http://localhost:8080/api",
+    headers: {"Content-Type": "application/json"},
 });
 
 // Gắn token tự động
@@ -35,7 +35,8 @@ export const getCurrentUser = async (navigate) => {
 
     try {
         const res = await api.get("/auth/me", {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {Authorization: `Bearer ${token}`},
+            Accept: "application/json"
         });
         return res.data ? res.data : navigate("/login");
     } catch (error) {
@@ -56,26 +57,26 @@ export const updateUserProfile = async (formData) => {
     return res.data;
 };
 
-//lấy thông tin người dùng để thanh toán
-export const getUserFromToken = () => {
+export const changePassword = async (pass) => {
     const token = localStorage.getItem("token");
-    if (!token) return null;
-    try {
-        const decoded = jwtDecode(token);
-        const userId = decoded?.userId || decoded?.id || decoded?.sub;
-        const username = decoded?.username || decoded?.sub;
-        const role = decoded?.role || decoded?.roles || "USER";
-        return { id: userId, username, role };
-    } catch {
-        return null;
-    }
-};
+    return (await api.post("/auth/change-password", pass,
+        {
+            headers: {
+                Authorization: `Bearer${token}`
+            }
+        })).data
+}
 
 
 export const loginApi = async (username, password) => {
-    const body = { username, password };
+    const body = {username, password};
     return await api.post("/auth/login", body);
 };
+
+export const googleLoginApi = async (idToken) => {
+    return await api.post("/auth/google", {idToken});
+};
+
 
 export const registerApi = async (formData) => {
     try {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
     LayoutDashboard,
-    Calendar,
+    Phone,
     Users,
     Grid3x3,
     Clock,
@@ -38,9 +38,9 @@ export function AppSidebar() {
     const menuItems = [
         { title: "Tổng Quan", icon: LayoutDashboard, href: "/admin", description: "Dashboard & Thống kê" },
         { title: "Lịch Đặt Sân", icon: Clock, href: "/admin/schedule", description: "Xem theo ngày & giờ" },
-        //{ title: "Quản Lý Đặt Sân", icon: Calendar, href: "/admin/bookings", description: "Danh sách booking" },
         { title: "Quản Lý Sân", icon: Grid3x3, href: "/admin/fields", description: "Thông tin sân bóng" },
         { title: "Khách Hàng", icon: Users, href: "/admin/users", description: "Quản lý người dùng" },
+        { title: "Giao Tiếp", icon: Phone, href: "/admin/chat-with-user", description: "Hỗ Trợ Khách Hàng" },
     ];
 
     // --- Class sidebar ---

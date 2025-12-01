@@ -14,6 +14,7 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
     Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String username);
 
     // Lấy tất cả user chưa bị xóa mềm
     List<User> findBySoftDeleteFalse();

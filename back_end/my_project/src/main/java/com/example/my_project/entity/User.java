@@ -28,6 +28,7 @@ public class User {
             regexp = "^[a-z0-9]{4,20}$",
             message = "Tên đăng nhập phải từ 4 đến 20 ký tự, chỉ bao gồm chữ thường chữ số và không có ký tự đặc biệt"
     )
+
     private String username;
 
     private String avatar;

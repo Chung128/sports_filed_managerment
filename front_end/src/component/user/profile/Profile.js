@@ -14,6 +14,7 @@ import { Formik, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { getCurrentUser, updateUserProfile } from "../../../service/user/login/authApi";
 import { useAuth } from "../../../service/user/context/authContext";
+import ChangePasswordModal from "../modal/ChangePasswordModal";
 
 export default function Profile() {
     const [isEditing, setIsEditing] = useState(false);
@@ -331,11 +332,9 @@ export default function Profile() {
                     </Form>
                 )}
             </Formik>
-
-            {/* Modal đổi mật khẩu */}
-            {/*{showPasswordModal && (*/}
-            {/*    <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />*/}
-            {/*)}*/}
+            {showPasswordModal && (
+                <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
+            )}
         </div>
     );
 }

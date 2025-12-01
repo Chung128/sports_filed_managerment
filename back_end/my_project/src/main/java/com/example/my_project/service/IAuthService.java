@@ -9,5 +9,6 @@ public interface IAuthService {
     String login(LoginRequest req);
     User getCurrentUser();
     User updateCurrentUser(User updatedUser);
-
+    String loginWithGoogle(String idToken);
+    void changePassword(Long userId ,String newPassword,String oldPassword);
 }

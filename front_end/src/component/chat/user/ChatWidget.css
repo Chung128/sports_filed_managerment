@@ -1,0 +1,103 @@
+.chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: white; /* Đặt nền màu trắng */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Thêm đổ bóng nhẹ */
+    cursor: pointer;
+    z-index: 1000;
+}
+
+/* --- MÀU XANH BLUE CHO ICON (.chat-icon) --- */
+.chat-icon {
+    /* Đặt màu cho icon. Thay mã màu này nếu bạn muốn màu xanh khác (ví dụ: #1877f2 cho Messenger Blue) */
+    color: #007bff;
+}
+
+.chat-box {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 350px;
+    height: 420px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    z-index: 9999;
+}
+
+/* HEADER */
+.chat-header {
+    padding: 12px;
+    background: #2d70ff;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* BODY */
+.chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+/* MESSAGE */
+.message {
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    max-width: 80%;
+}
+
+.message-user {
+    background: #d4e5ff;
+    margin-left: auto;
+}
+
+.message-admin {
+    background: #f1f1f1;
+    margin-right: auto;
+}
+
+/* INPUT */
+.chat-input {
+    padding: 10px;
+    display: flex;
+    border-top: 1px solid #ccc;
+}
+
+.chat-input input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.chat-input button {
+    margin-left: 10px;
+    padding: 8px 14px;
+    border: none;
+    background: #2d70ff;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+}

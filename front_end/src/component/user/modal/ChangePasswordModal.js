@@ -1,5 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import * as Yup from "yup";
+import {changePassword} from "../../../service/user/login/authApi";
 
 export default function ChangePasswordModal({ onClose }) {
     const [oldPassword, setOldPassword] = useState("");
@@ -15,16 +17,29 @@ export default function ChangePasswordModal({ onClose }) {
         }
 
         try {
-            setLoading(true);
-          //  await changePassword({ oldPassword, newPassword });
+            await changePassword({
+                oldPassword,
+                newPassword
+            });
+
             toast.success("Đổi mật khẩu thành công");
             onClose();
+
         } catch (err) {
-            toast.error(err.response?.data || "Đổi mật khẩu thất bại");
-        } finally {
-            setLoading(false);
+
+            toast.error(
+                err.response?.data?.message ||
+                err.response?.data ||
+                "Đổi mật khẩu thất bại"
+            );
         }
+
     };
+    const validationSchema = Yup.object({
+        password: Yup.string()
+            .min(6, "Mật khẩu phải có ít nhất 6 ký tự.")
+            .required("Mật khẩu không được để trống."),
+    });
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

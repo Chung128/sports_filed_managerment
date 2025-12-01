@@ -11,8 +11,24 @@ export default function BookingPage() {
     const navigate = useNavigate();
 
     // ✅ Kiểm tra token hợp lệ
+    // useEffect(() => {
+    //     getCurrentUser(navigate);
+    // }, [navigate]);
     useEffect(() => {
-        getCurrentUser(navigate);
+        const checkAuth = async () => {
+            try {
+                await getCurrentUser(); // Giả sử getCurrentUser throw error nếu token invalid hoặc hết hạn
+            } catch (error) {
+                // Kiểm tra nếu lỗi là 401 (Unauthorized) hoặc tương tự để redirect về login
+                if (error.response?.status === 401 || error.message.includes("Unauthorized")) {
+                    navigate("/login"); // Redirect về trang đăng nhập nếu token hết hạn
+                } else {
+                    console.error("Lỗi kiểm tra user:", error);
+                }
+            }
+        };
+
+        checkAuth();
     }, [navigate]);
 
     // ✅ Lấy danh sách biến thể sân từ BE

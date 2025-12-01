@@ -266,7 +266,6 @@ public class VNPAYService {
     public void deleteBookingRequestFromTempStorage(String txnRef) {
         try {
             tempBookingRequestRepository.deleteById(txnRef);
-            logger.info("Deleted temp booking request: {}", txnRef);
         } catch (Exception e) {
             logger.warn("Failed to delete temp booking: {}", e.getMessage());
         }

@@ -1,5 +1,6 @@
 package com.example.my_project.controller;
 
+import com.example.my_project.dto.users.BankCallbackDto;
 import com.example.my_project.dto.users.BookingRequest;
 import com.example.my_project.dto.users.BookingResponseDTO;
 import com.example.my_project.dto.users.CourtAvailabilityDTO;
@@ -10,9 +11,11 @@ import com.example.my_project.repository.ICourtRepository;
 import com.example.my_project.service.IBookingService;
 import com.example.my_project.service.IUserService;
 import com.example.my_project.service.imp.TempBookingService;
+import com.example.my_project.service.vnpay.QrBankService;
 import com.example.my_project.service.vnpay.VNPAYService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,6 +32,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 @RestController
 @RequestMapping("/api/v1/booking")
@@ -41,6 +46,7 @@ public class BookingController {
     private final ICourtRepository courtRepository;
     private final VNPAYService vnpayService;
     private final IUserService userService; // DÙNG SERVICE
+    private final QrBankService qrBankService;
 
 
     @GetMapping
@@ -76,105 +82,102 @@ public class BookingController {
         return ResponseEntity.ok(price);
     }
 
-@PostMapping("/create")
-@PreAuthorize("isAuthenticated()")
-public ResponseEntity<String> createBooking(@RequestBody BookingRequest request) {
-    User user = userService.getCurrentUser();
-    request.setUserId(user.getId());
+    @PostMapping("/create")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> createBooking(@RequestBody BookingRequest request) {
+        User user = userService.getCurrentUser();
+        request.setUserId(user.getId());
 
-    // === VALIDATE ===
-    if (request.getCourtId() == null || request.getSpecificDate() == null || request.getTimeSlots().isEmpty()) {
-        throw new IllegalArgumentException("Dữ liệu không hợp lệ");
-    }
+        // === VALIDATE ===
+        if (request.getCourtId() == null || request.getSpecificDate() == null || request.getTimeSlots().isEmpty()) {
+            throw new IllegalArgumentException("Dữ liệu không hợp lệ");
+        }
 
-    Court court = courtRepository.findById(request.getCourtId())
-            .orElseThrow(() -> new IllegalArgumentException("Sân không tồn tại"));
+        Court court = courtRepository.findById(request.getCourtId())
+                .orElseThrow(() -> new IllegalArgumentException("Sân không tồn tại"));
 
-    BigDecimal totalAmount = BigDecimal.ZERO;
-    for (var slot : request.getTimeSlots()) {
-        totalAmount = totalAmount.add(bookingService.calculatePrice(
-                court.getCourtVariant().getId(), request.getSpecificDate(),
-                slot.getStartTime(), slot.getEndTime()
-        ));
-    }
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (var slot : request.getTimeSlots()) {
+            totalAmount = totalAmount.add(bookingService.calculatePrice(
+                    court.getCourtVariant().getId(), request.getSpecificDate(),
+                    slot.getStartTime(), slot.getEndTime()
+            ));
+        }
 
-    String txnRef = UUID.randomUUID().toString();
+        String txnRef = UUID.randomUUID().toString();
 
-    // === LOCK SLOT TRƯỚC KHI TẠO VNPAY URL ===
-    try {
-        tempBookingService.lockSlots(request, txnRef);
-    } catch (IllegalStateException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    String vnpayUrl = vnpayService.generateVnpayUrl(totalAmount, request, txnRef);
-    return ResponseEntity.ok(vnpayUrl);
-}
-
-
-@GetMapping("/payment-callback")
-public void handlePaymentCallback(
-        @RequestParam Map<String, String> allParams,
-        HttpServletResponse httpResponse) throws Exception {
-
-    String responseCode = allParams.get("vnp_ResponseCode");
-    String txnRef = allParams.get("vnp_TxnRef");
-
-    logger.info("VNPAY callback: responseCode={}, txnRef={}", responseCode, txnRef);
-
-    BookingRequest request = vnpayService.retrieveBookingRequestFromTempStorage(txnRef);
-    boolean success = "00".equals(responseCode);
-    String message = "";
-    String courtName = "", date = "", timeSlots = "";
-    BigDecimal amount = BigDecimal.ZERO;
-
-    if (request == null) {
-        message = "Không tìm thấy thông tin đặt sân";
-        success = false;
-
-        // XÓA TEMP LOCK DÙ KHÔNG CÓ REQUEST
-        tempBookingService.unlockSlots(txnRef);
-        vnpayService.deleteBookingRequestFromTempStorage(txnRef);
-    }
-    else if (success) {
+        // === LOCK SLOT TRƯỚC KHI TẠO VNPAY URL ===
         try {
-            //  KHÔNG unlock trước — giữ nguyên temp để tránh WebSocket gửi UNLOCK sai
-            Booking firstBooking = bookingService.createBooking(request, "PAID", txnRef);
+            tempBookingService.lockSlots(request, txnRef);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
-            Court court = firstBooking.getCourt();
-            courtName = court.getName();
-            date = firstBooking.getSpecificDate().toString();
-            timeSlots = firstBooking.getHourlyStartTime() + "-" + firstBooking.getHourlyEndTime();
-            amount = firstBooking.getTotalAmount();
-            message = "Đặt sân thành công!";
+        String vnpayUrl = vnpayService.generateVnpayUrl(totalAmount, request, txnRef);
+        return ResponseEntity.ok(vnpayUrl);
+    }
 
-            //  Sau khi tạo booking thành công:
-            // 1. Xóa temp lock + gửi event BOOKED để FE cập nhật trạng thái
-            // 2. Xóa temp trong vnpayService
-            tempBookingService.deleteTempsAndPublishBooked(txnRef, firstBooking);
-            vnpayService.deleteBookingRequestFromTempStorage(txnRef);
 
-        } catch (Exception e) {
-            logger.error("Lỗi tạo booking: {}", e.getMessage(), e);
+    @GetMapping("/payment-callback")
+    public void handlePaymentCallback(
+            @RequestParam Map<String, String> allParams,
+            HttpServletResponse httpResponse) throws Exception {
+
+        String responseCode = allParams.get("vnp_ResponseCode");
+        String txnRef = allParams.get("vnp_TxnRef");
+
+        logger.info("VNPAY callback: responseCode={}, txnRef={}", responseCode, txnRef);
+
+        BookingRequest request = vnpayService.retrieveBookingRequestFromTempStorage(txnRef);
+        boolean success = "00".equals(responseCode);
+        String message = "";
+        String courtName = "", date = "", timeSlots = "";
+        BigDecimal amount = BigDecimal.ZERO;
+
+        if (request == null) {
+            message = "Không tìm thấy thông tin đặt sân";
             success = false;
-            message = "Đặt sân thất bại: " + e.getMessage();
 
-            //  Nếu lỗi thì mở khóa slot + xóa temp
+            // XÓA TEMP LOCK DÙ KHÔNG CÓ REQUEST
+            tempBookingService.unlockSlots(txnRef);
+            vnpayService.deleteBookingRequestFromTempStorage(txnRef);
+        } else if (success) {
+            try {
+                //  KHÔNG unlock trước — giữ nguyên temp để tránh WebSocket gửi UNLOCK sai
+                Booking firstBooking = bookingService.createBooking(request, "PAID", txnRef);
+
+                Court court = firstBooking.getCourt();
+                courtName = court.getName();
+                date = firstBooking.getSpecificDate().toString();
+                timeSlots = firstBooking.getHourlyStartTime() + "-" + firstBooking.getHourlyEndTime();
+                amount = firstBooking.getTotalAmount();
+                message = "Đặt sân thành công!";
+
+                //  Sau khi tạo booking thành công:
+                // 1. Xóa temp lock + gửi event BOOKED để FE cập nhật trạng thái
+                // 2. Xóa temp trong vnpayService
+                tempBookingService.deleteTempsAndPublishBooked(txnRef, firstBooking);
+                vnpayService.deleteBookingRequestFromTempStorage(txnRef);
+
+            } catch (Exception e) {
+                logger.error("Lỗi tạo booking: {}", e.getMessage(), e);
+                success = false;
+                message = "Đặt sân thất bại: " + e.getMessage();
+
+                //  Nếu lỗi thì mở khóa slot + xóa temp
+                tempBookingService.unlockSlots(txnRef);
+                vnpayService.deleteBookingRequestFromTempStorage(txnRef);
+            }
+        } else {
+            message = "Thanh toán thất bại: " + getVnpayErrorMessage(responseCode);
+
+            // THẤT BẠI: XÓA TEMP
             tempBookingService.unlockSlots(txnRef);
             vnpayService.deleteBookingRequestFromTempStorage(txnRef);
         }
+
+        redirectToFrontend(httpResponse, success, message, txnRef, courtName, date, timeSlots, amount);
     }
-
-    else {
-        message = "Thanh toán thất bại: " + getVnpayErrorMessage(responseCode);
-
-        // THẤT BẠI: XÓA TEMP
-        tempBookingService.unlockSlots(txnRef);
-        vnpayService.deleteBookingRequestFromTempStorage(txnRef);
-    }
-
-    redirectToFrontend(httpResponse, success, message, txnRef, courtName, date, timeSlots, amount);
-}
 
     private void redirectToFrontend(HttpServletResponse response,
                                     boolean success,
@@ -226,13 +229,191 @@ public void handlePaymentCallback(
         return ResponseEntity.ok(response);
     }
 
-@GetMapping("/temp-booking/locked")
-public ResponseEntity<List<Map<String, String>>> getLockedSlots(
-        @RequestParam Long courtId,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    @GetMapping("/temp-booking/locked")
+    public ResponseEntity<List<Map<String, String>>> getLockedSlots(
+            @RequestParam Long courtId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-    List<Map<String, String>> slots = tempBookingService.getLockedSlots(courtId, date);
-    return ResponseEntity.ok(slots);
-}
+        List<Map<String, String>> slots = tempBookingService.getLockedSlots(courtId, date);
+        return ResponseEntity.ok(slots);
+    }
+
+
+    // qr PAY
+    @PostMapping("/create-qr")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> createQrPayment(@RequestBody BookingRequest request) {
+        User user = userService.getCurrentUser();
+        request.setUserId(user.getId());
+
+
+        if (request.getCourtId() == null || request.getSpecificDate() == null || request.getTimeSlots().isEmpty()) {
+            throw new IllegalArgumentException("Dữ liệu không hợp lệ");
+        }
+
+        Court court = courtRepository.findById(request.getCourtId())
+                .orElseThrow(() -> new IllegalArgumentException("Sân không tồn tại"));
+
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (var slot : request.getTimeSlots()) {
+            totalAmount = totalAmount.add(bookingService.calculatePrice(
+                    court.getCourtVariant().getId(), request.getSpecificDate(),
+                    slot.getStartTime(), slot.getEndTime()
+            ));
+        }
+
+        String txnRef = UUID.randomUUID().toString();
+
+        try {
+            tempBookingService.lockSlots(request, txnRef);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+
+        // Tạo QR image dạng Base64 gửi FE
+        String qrBase64 = qrBankService.generateQrCode(totalAmount, txnRef);
+
+        // Lưu request như cách của VNPay để xử lý khi chuyển khoản thành công
+        qrBankService.storePendingPayment(txnRef, request, totalAmount);
+
+        return ResponseEntity.ok(Map.of(
+                "txnRef", txnRef,
+                "amount", totalAmount,
+                "qrImage", qrBase64,
+                "message", "Vui lòng quét QR để thanh toán"
+        ));
+    }
+
+    //    @PostMapping("/qr-payment/callback")
+//    public ResponseEntity<String> handleQrCallback(@RequestBody BankCallbackDto dto) {
+//
+//        String description = dto.getDescription();
+//        Long amountFromBank = dto.getAmount();
+//
+//        // Tìm txnRef trong NDCK
+//        String txnRef = extractTxnRef(description);
+//
+//        if (txnRef == null)
+//            return ResponseEntity.ok("NO_MATCH");
+//
+//        BookingRequest request = qrBankService.getPendingRequest(txnRef);
+//        if (request == null)
+//            return ResponseEntity.ok("NOT_FOUND");
+//
+//        BigDecimal expectedAmount = qrBankService.getPendingAmount(txnRef);
+//        if (!expectedAmount.equals(BigDecimal.valueOf(amountFromBank)))
+//            return ResponseEntity.ok("WRONG_AMOUNT");
+//
+//        try {
+//            Booking booking = bookingService.createBooking(request, "PAID", txnRef);
+//
+//            tempBookingService.deleteTempsAndPublishBooked(txnRef, booking);
+//            qrBankService.completePayment(txnRef);
+//
+//
+//            return ResponseEntity.ok("SUCCESS");
+//
+//        } catch (Exception e) {
+//            tempBookingService.unlockSlots(txnRef);
+//            return ResponseEntity.ok("FAILED");
+//        }
+//    }
+    @PostMapping("/qr-payment/callback")
+    public void handleQrCallback(@RequestBody BankCallbackDto dto,
+                                 HttpServletResponse httpResponse) throws IOException {
+
+        String description = dto.getDescription();
+        Long amountFromBank = dto.getAmount();
+
+        String txnRef = extractTxnRef(description);
+
+        boolean success = false;
+        String message = "";
+        String courtName = "", date = "", timeSlots = "";
+        BigDecimal amount = BigDecimal.ZERO;
+
+        if (txnRef == null) {
+            message = "Không tìm thấy mã giao dịch";
+        } else {
+            BookingRequest request = qrBankService.getPendingRequest(txnRef);
+
+            if (request == null) {
+                message = "Không tìm thấy thông tin đặt sân";
+                tempBookingService.unlockSlots(txnRef);
+                qrBankService.deleteTemp(txnRef); // ⬅ XÓA
+            } else {
+
+                BigDecimal expectedAmount = qrBankService.getPendingAmount(txnRef);
+
+                if (expectedAmount == null ||
+                        expectedAmount.longValue() != amountFromBank) {
+
+                    message = "Số tiền thanh toán không đúng";
+
+                    tempBookingService.unlockSlots(txnRef);
+                    qrBankService.deleteTemp(txnRef); // ⬅ XÓA
+                } else {
+
+                    try {
+                        Booking booking = bookingService.createBooking(request, "PAID", txnRef);
+
+                        Court court = booking.getCourt();
+                        courtName = court.getName();
+                        date = booking.getSpecificDate().toString();
+                        timeSlots = booking.getHourlyStartTime() + "-" + booking.getHourlyEndTime();
+                        amount = booking.getTotalAmount();
+
+                        success = true;
+                        message = "Thanh toán thành công!";
+
+                        tempBookingService.deleteTempsAndPublishBooked(txnRef, booking);
+                        qrBankService.deleteTemp(txnRef); // ⬅ XÓA
+
+                    } catch (Exception e) {
+                        success = false;
+                        message = "Thanh toán thất bại: " + e.getMessage();
+
+                        tempBookingService.unlockSlots(txnRef);
+                        qrBankService.deleteTemp(txnRef); // ⬅ XÓA
+                    }
+                }
+            }
+        }
+
+        // Redirect về FE
+        String redirectUrl = "http://localhost:3000/booking-result" +
+                "?success=" + success +
+                "&message=" + URLEncoder.encode(message, StandardCharsets.UTF_8) +
+                "&txnRef=" + (txnRef != null ? txnRef : "") +
+                "&courtName=" + URLEncoder.encode(courtName, StandardCharsets.UTF_8) +
+                "&date=" + date +
+                "&time=" + URLEncoder.encode(timeSlots, StandardCharsets.UTF_8) +
+                "&amount=" + amount.longValue();
+
+        httpResponse.sendRedirect(redirectUrl);
+    }
+
+    @PostMapping("/cancel/{txnRef}")
+    public ResponseEntity<String> cancelQr(@PathVariable String txnRef) {
+
+        // mở slot
+        tempBookingService.unlockSlots(txnRef);
+
+        // xóa request QR
+        qrBankService.deleteTemp(txnRef);
+
+        return ResponseEntity.ok("CANCELLED");
+    }
+
+    private String extractTxnRef(String content) {
+        if (content == null) return null;
+
+        // regex bắt SAN-<chuỗi bất kỳ không có khoảng trắng>
+        Pattern p = Pattern.compile("SAN-([A-Za-z0-9\\-]+)");
+        Matcher m = p.matcher(content);
+
+        if (m.find()) return m.group(1);
+        return null;
+    }
 
 }

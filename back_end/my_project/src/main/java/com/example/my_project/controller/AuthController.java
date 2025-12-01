@@ -3,6 +3,8 @@ package com.example.my_project.controller;
 import com.example.my_project.entity.User;
 import com.example.my_project.otp.PendingUser;
 import com.example.my_project.record.AuthResponse;
+import com.example.my_project.record.ChangePasswordRequest;
+import com.example.my_project.record.GoogleLoginRequest;
 import com.example.my_project.record.LoginRequest;
 import com.example.my_project.repository.IUserRepository;
 import com.example.my_project.service.IAuthService;
@@ -27,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 
 @RestController
 @CrossOrigin("*")
@@ -248,5 +251,31 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/change-password")
+    public  ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, Principal principal) {
+        try {
+            String username=principal.getName();
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+            authService.changePassword(user.getId(),request.oldPassword(),request.newPassword());
+
+            return ResponseEntity.ok("Đổi mật khẩu thành công");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> loginWithGoogle(@RequestBody GoogleLoginRequest request) {
+        try {
+            String token = authService.loginWithGoogle(request.idToken());
+            return ResponseEntity.ok(new AuthResponse(token));
+        } catch (Exception e) {
+            e.printStackTrace(); // thêm để xem lỗi thật
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new AuthResponse(null));
+        }
+    }
 
 }
