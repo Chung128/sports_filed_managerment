@@ -50,7 +50,7 @@ public class CourtService implements ICourtService {
 
         boolean hasFutureBooking = activeBookings.stream().anyMatch(booking -> {
 
-            // ⭐ 1) Booking theo giờ (Hourly)
+            //  Booking theo giờ (Hourly)
             if (booking.getSpecificDate() != null) {
 
                 // Booking trong quá khứ hoàn toàn → KHÔNG chặn

@@ -111,7 +111,7 @@ public class TempBookingService {
     private final ApplicationEventPublisher eventPublisher;
     private final SimpMessagingTemplate messagingTemplate;
 
-    // 🔹 1. KHÓA SLOT
+    // KHÓA SLOT
     @Transactional
     public void lockSlots(BookingRequest request, String txnRef) {
         for (var slot : request.getTimeSlots()) {
@@ -144,7 +144,6 @@ public class TempBookingService {
             tempRepo.save(temp);
         }
 
-        // Publish LOCK event (will be handled AFTER COMMIT by listener)
         eventPublisher.publishEvent(new BookingEvent(
                 request.getCourtId(),
                 request.getSpecificDate(),
@@ -153,7 +152,7 @@ public class TempBookingService {
         ));
     }
 
-    // 🔹 2. MỞ KHÓA SLOT (dùng khi payment thất bại hoặc request không tồn tại)
+    //  MỞ KHÓA SLOT (dùng khi payment thất bại hoặc request không tồn tại)
     @Transactional
     public void unlockSlots(String txnRef) {
         List<TempBooking> temps = tempRepo.findByTxnRef(txnRef);
@@ -168,8 +167,7 @@ public class TempBookingService {
         eventPublisher.publishEvent(new BookingEvent(courtId, date, "UNLOCK", temps));
     }
 
-    // 🔹 2b. XÓA TEMPS SAU KHI ĐÃ TẠO BOOKING THẬT -> publish BOOKED
-    //    Gọi hàm này từ controller sau khi bookingService.createBooking(...) thành công
+    //  XÓA TEMPS SAU KHI ĐÃ TẠO BOOKING THẬT
     @Transactional
     public void deleteTempsAndPublishBooked(String txnRef, Booking booking) {
         List<TempBooking> temps = tempRepo.findByTxnRef(txnRef);
@@ -178,7 +176,7 @@ public class TempBookingService {
         Long courtId = temps.get(0).getCourtId();
         LocalDate date = temps.get(0).getSpecificDate();
 
-        // Delete temps
+
         tempRepo.deleteAll(temps);
 
         // Prepare payload slots as simple maps
@@ -190,11 +188,10 @@ public class TempBookingService {
             ));
         }
 
-        // Publish BOOKED (AFTER COMMIT)
         eventPublisher.publishEvent(new BookingEventWithMeta(courtId, date, "BOOKED", slots, booking.getId()));
     }
 
-    // 🔹 3. XÓA HẾT BOOKING QUÁ HẠN
+    //  XÓA HẾT BOOKING QUÁ HẠN
     @Scheduled(fixedRate = 300000)
     @Transactional
     public void cleanupExpired() {
@@ -220,7 +217,7 @@ public class TempBookingService {
         }
     }
 
-    // 🔹 4. XỬ LÝ EVENT SAU KHI COMMIT -> gửi WebSocket
+    //  XỬ LÝ EVENT SAU KHI COMMIT -> gửi WebSocket
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleBookingEvent(Object evt) {
         // We accept two event types: BookingEvent (raw slots as TimeSlot or TempBooking)
@@ -257,15 +254,15 @@ public class TempBookingService {
             payload.put("slots", bem.slots());
             payload.put("bookingId", bem.bookingId()); // optional meta useful for FE
         } else {
-            // Unknown event type - ignore
+
             return;
         }
 
-        // send to topic
+
         messagingTemplate.convertAndSend("/topic/court/" + courtId, payload);
     }
 
-    // 🔹 5. API gọi từ Controller -> trả về List<Map<String,String>> (FE đang dùng kiểu này)
+    //  API gọi từ Controller -> trả về List<Map<String,String>> (FE đang dùng kiểu này)
     public List<Map<String, String>> getLockedSlots(Long courtId, LocalDate date) {
         List<TempBooking> temps = tempRepo.findByCourtIdAndSpecificDate(courtId, date);
         List<Map<String, String>> slots = new ArrayList<>();
@@ -278,7 +275,7 @@ public class TempBookingService {
         return slots;
     }
 
-    // Event records
+
     public record BookingEvent(Long courtId, LocalDate date, String action, List<?> slots) {}
     public record BookingEventWithMeta(Long courtId, LocalDate date, String action, List<Map<String,String>> slots, Long bookingId) {}
 }

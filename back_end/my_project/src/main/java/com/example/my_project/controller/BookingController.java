@@ -45,7 +45,7 @@ public class BookingController {
     private final IBookingService bookingService;
     private final ICourtRepository courtRepository;
     private final VNPAYService vnpayService;
-    private final IUserService userService; // DÙNG SERVICE
+    private final IUserService userService;
     private final QrBankService qrBankService;
 
 
@@ -54,7 +54,7 @@ public class BookingController {
         return bookingService.findAll();
     }
 
-    //  API tìm kiếm lịch sử đặt sân theo tên sân
+
     @GetMapping("/search")
     public List<Booking> searchBookings(@RequestParam(value = "keyword", required = false) String keyword) {
         return bookingService.searchByFieldName(keyword);
@@ -88,7 +88,6 @@ public class BookingController {
         User user = userService.getCurrentUser();
         request.setUserId(user.getId());
 
-        // === VALIDATE ===
         if (request.getCourtId() == null || request.getSpecificDate() == null || request.getTimeSlots().isEmpty()) {
             throw new IllegalArgumentException("Dữ liệu không hợp lệ");
         }
@@ -106,7 +105,7 @@ public class BookingController {
 
         String txnRef = UUID.randomUUID().toString();
 
-        // === LOCK SLOT TRƯỚC KHI TẠO VNPAY URL ===
+
         try {
             tempBookingService.lockSlots(request, txnRef);
         } catch (IllegalStateException e) {
@@ -143,7 +142,6 @@ public class BookingController {
             vnpayService.deleteBookingRequestFromTempStorage(txnRef);
         } else if (success) {
             try {
-                //  KHÔNG unlock trước — giữ nguyên temp để tránh WebSocket gửi UNLOCK sai
                 Booking firstBooking = bookingService.createBooking(request, "PAID", txnRef);
 
                 Court court = firstBooking.getCourt();
@@ -153,9 +151,6 @@ public class BookingController {
                 amount = firstBooking.getTotalAmount();
                 message = "Đặt sân thành công!";
 
-                //  Sau khi tạo booking thành công:
-                // 1. Xóa temp lock + gửi event BOOKED để FE cập nhật trạng thái
-                // 2. Xóa temp trong vnpayService
                 tempBookingService.deleteTempsAndPublishBooked(txnRef, firstBooking);
                 vnpayService.deleteBookingRequestFromTempStorage(txnRef);
 
@@ -284,40 +279,7 @@ public class BookingController {
         ));
     }
 
-    //    @PostMapping("/qr-payment/callback")
-//    public ResponseEntity<String> handleQrCallback(@RequestBody BankCallbackDto dto) {
-//
-//        String description = dto.getDescription();
-//        Long amountFromBank = dto.getAmount();
-//
-//        // Tìm txnRef trong NDCK
-//        String txnRef = extractTxnRef(description);
-//
-//        if (txnRef == null)
-//            return ResponseEntity.ok("NO_MATCH");
-//
-//        BookingRequest request = qrBankService.getPendingRequest(txnRef);
-//        if (request == null)
-//            return ResponseEntity.ok("NOT_FOUND");
-//
-//        BigDecimal expectedAmount = qrBankService.getPendingAmount(txnRef);
-//        if (!expectedAmount.equals(BigDecimal.valueOf(amountFromBank)))
-//            return ResponseEntity.ok("WRONG_AMOUNT");
-//
-//        try {
-//            Booking booking = bookingService.createBooking(request, "PAID", txnRef);
-//
-//            tempBookingService.deleteTempsAndPublishBooked(txnRef, booking);
-//            qrBankService.completePayment(txnRef);
-//
-//
-//            return ResponseEntity.ok("SUCCESS");
-//
-//        } catch (Exception e) {
-//            tempBookingService.unlockSlots(txnRef);
-//            return ResponseEntity.ok("FAILED");
-//        }
-//    }
+
     @PostMapping("/qr-payment/callback")
     public void handleQrCallback(@RequestBody BankCallbackDto dto,
                                  HttpServletResponse httpResponse) throws IOException {
@@ -408,7 +370,6 @@ public class BookingController {
     private String extractTxnRef(String content) {
         if (content == null) return null;
 
-        // regex bắt SAN-<chuỗi bất kỳ không có khoảng trắng>
         Pattern p = Pattern.compile("SAN-([A-Za-z0-9\\-]+)");
         Matcher m = p.matcher(content);
 

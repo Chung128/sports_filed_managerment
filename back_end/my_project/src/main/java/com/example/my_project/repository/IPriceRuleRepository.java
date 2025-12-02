@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPriceRuleRepository extends JpaRepository<PriceRule, Long> {
-    /**
-     * Truy vấn luật giá theo loại sân, thời gian và nhóm ngày.
-     * Logic nghiệp vụ về ưu tiên sẽ được xử lý ở tầng Service.
-     */
+
     @Query("SELECT pr FROM PriceRule pr WHERE pr.courtVariant.id = :variantId AND pr.isActive = true " +
             "AND pr.startTime <= :time AND pr.endTime > :time AND pr.dayType IN :dayTypes")
     List<PriceRule> findApplicablePriceRules(

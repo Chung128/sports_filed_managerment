@@ -19,10 +19,8 @@ public class BookingRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate specificDate;
 
-    // MỚI: Danh sách khung giờ
     private List<TimeSlot> timeSlots;
 
-    // Các field cũ (giữ lại để tương thích)
     @JsonFormat(pattern = "HH:mm[:ss]")
     private LocalTime hourlyStartTime;
 

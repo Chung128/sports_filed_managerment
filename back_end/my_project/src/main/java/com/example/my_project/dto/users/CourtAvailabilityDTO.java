@@ -1,4 +1,3 @@
-// src/main/java/com/example/my_project/dto/CourtAvailabilityDTO.java
 package com.example.my_project.dto.users;
 
 import com.example.my_project.enums.StatusCourt;

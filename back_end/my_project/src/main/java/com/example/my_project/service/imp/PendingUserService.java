@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Service
 public class PendingUserService implements IPendingUserService {
-    private IPendingUserRepository pendingUserRepository;
+    private final IPendingUserRepository pendingUserRepository;
 
     public PendingUserService(IPendingUserRepository pendingUserRepository) {
         this.pendingUserRepository = pendingUserRepository;

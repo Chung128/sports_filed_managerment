@@ -5,62 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1c031dd8-9daa-4a70-b556-4275a7e6a5fc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/SupportChatController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/chat/AdminSendRequestDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/chat/ConversationResponseDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/chat/MessageDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/chat/MessageMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/chat/SendMessageRequestDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/users/BankCallbackDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/Conversation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/Message.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/record/ChangePasswordRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/record/GoogleLoginRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/repository/IConversationRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/repository/IMessageRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/IConversationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/IMessageService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/ConversationService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/MessageService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/vnpay/QrBankService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/websocket/PaymentWebSocketService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/chat/admin/AdminChatPanel.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/chat/admin/AdminChatPanel.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/chat/admin/AdminDashboard.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/chat/admin/AdminDashboard.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/chat/user/ChatWidget.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/chat/user/ChatWidget.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/user/qr/BookingForm.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/user/qr/BookingResult.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/user/qr/QrPaymentModal.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/component/user/qr/useStomp.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/service/chat/chatBoxApi.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/front_end/src/service/user/booking/qrApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/AuthController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/BookingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/BookingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/WebSocketController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/details/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/details/CustomUserDetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/TempBookingRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/TempBookingRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/repository/ITempBookingRequestRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/repository/ITempBookingRequestRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/repository/IUserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/repository/IUserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/IAuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/IAuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/vnpay/VNPAYService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/vnpay/VNPAYService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/websocket/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/websocket/WebSocketConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/admin/layout/AppSidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/admin/layout/AppSidebar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/booking/BookingPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/booking/BookingPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/login/LoginPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/login/LoginPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/modal/BookingTimeModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/modal/BookingTimeModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/modal/ChangePasswordModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/modal/ChangePasswordModal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/component/user/profile/Profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/component/user/profile/Profile.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front_end/src/service/user/login/authApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/src/service/user/login/authApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/SupportChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/controller/SupportChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/admin/CourtResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/admin/CourtResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/chat/ConversationResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/chat/ConversationResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/users/BankCallbackDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/users/BankCallbackDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/users/BookingRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/users/BookingRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/users/CourtAvailabilityDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/dto/users/CourtAvailabilityDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/Booking.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/Booking.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/BookingType.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/BookingType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/CourtVariant.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/CourtVariant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/PriceRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/entity/PriceRule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/repository/IPriceRuleRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/repository/IPriceRuleRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/ConversationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/ConversationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/CourtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/CourtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/MessageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/MessageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/PendingUserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/PendingUserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/TempBookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/back_end/my_project/src/main/java/com/example/my_project/service/imp/TempBookingService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,7 +155,10 @@
       <workItem from="1764225749083" duration="1901000" />
       <workItem from="1764233378492" duration="2314000" />
       <workItem from="1764300631655" duration="6893000" />
-      <workItem from="1764558147794" duration="582000" />
+      <workItem from="1764558147794" duration="4099000" />
+      <workItem from="1764572742746" duration="307000" />
+      <workItem from="1764576019930" duration="70000" />
+      <workItem from="1764691980818" duration="1369000" />
     </task>
     <servers />
   </component>

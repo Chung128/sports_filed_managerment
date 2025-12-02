@@ -16,7 +16,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
@@ -110,10 +109,8 @@ public class AuthController {
         // 2. ĐỌC NỘI DUNG FILE VÀO STRING
         String templateContent;
         try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
-            // Sử dụng FileCopyUtils để dễ dàng đọc toàn bộ nội dung stream thành String
             templateContent = FileCopyUtils.copyToString(reader);
         } catch (IOException e) {
-            // Xử lý lỗi nếu không tìm thấy file hoặc lỗi đọc file
             throw new IOException("Không thể đọc template email OTP: " + e.getMessage(), e);
         }
 
@@ -139,7 +136,6 @@ public class AuthController {
                 return ResponseEntity.badRequest().body("Mã OTP không đúng");
             }
 
-            // Gọi hàm register như bạn yêu cầu
             authService.register(
                     pending.getName(),
                     pending.getUsername(),
@@ -171,21 +167,7 @@ public class AuthController {
         }
     }
 
-    //    @GetMapping("/me")
-//    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
-//        if (authentication == null || authentication.getName() == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token không hợp lệ");
-//        }
-//        String username = authentication.getName();
-//        try {
-//            User user = userRepository.findByUsername(username)
-//                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
-//            return ResponseEntity.ok(user);
-//        } catch (RuntimeException e) {
-//            logger.error("Lỗi lấy thông tin user: {}", e.getMessage());
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng");
-//        }
-//    }
+
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         // ⚠️ Nếu không có token hoặc token sai, không ném lỗi → chỉ trả về "anonymous"

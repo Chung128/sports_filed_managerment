@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class BankCallbackDto {
 
     private String transactionId;
-    private String description;   // chứa SAN-<txnRef>
+    private String description;
     private Long amount;
     private String bankAccount;
     private String bankCode;

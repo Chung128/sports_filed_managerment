@@ -40,7 +40,7 @@ public class ConversationService implements IConversationService {
         return conversationRepository.findAll();
     }
 
-    /** Đánh dấu đã đọc */
+
     @Override
     public Conversation markRead(Long conversationId, boolean isAdmin) {
         Conversation c = conversationRepository.findById(conversationId)

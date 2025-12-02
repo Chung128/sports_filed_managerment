@@ -14,7 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+
 import java.util.Date;
 import java.util.List;
 
@@ -27,9 +27,6 @@ public class MessageService implements IMessageService {
     private final SimpMessagingTemplate messagingTemplate;
     private final IConversationRepository conversationRepository;
 
-    // ============================================================
-    // USER SEND MESSAGE
-    // ============================================================
     @Override
     @Transactional
     public Message send(Conversation conversation, Long senderId, String content) {
@@ -40,8 +37,7 @@ public class MessageService implements IMessageService {
         message.setConversation(conversation);
         message.setSender(sender);
         message.setContent(content);
-        // createdAt đã được set mặc định trong entity = LocalDateTime.now()
-        // Không cần set lại
+
 
         Message saved = messageRepository.saveAndFlush(message);
 
@@ -57,17 +53,11 @@ public class MessageService implements IMessageService {
         return saved;
     }
 
-    // ============================================================
-    // GET MESSAGE HISTORY
-    // ============================================================
     @Override
     public List<Message> getMessages(Long conversationId) {
         return messageRepository.findByConversationIdOrderByCreatedAtAsc(conversationId);
     }
 
-    // ============================================================
-    // ADMIN SEND MESSAGE – HOÀN CHỈNH, DÙNG LocalDateTime
-    // ============================================================
     @Override
     @Transactional
     public Message sendAsAdmin(Long userId, String content, Long adminId) {
@@ -106,7 +96,7 @@ public class MessageService implements IMessageService {
         msg.setConversation(c);
         msg.setSender(admin);
         msg.setContent(content);
-        // createdAt sẽ tự động được gán LocalDateTime.now() nhờ default trong entity
+
 
         Message saved = messageRepository.saveAndFlush(msg);
 

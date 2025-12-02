@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class CourtResponseDTO {
     private Long id;
     private String name;
-    private String type; // ví dụ: "5v5" | "7v7" | "11v11"
+    private String type;
     private Double pricePerHour;
     private StatusCourt status;
     private String image;

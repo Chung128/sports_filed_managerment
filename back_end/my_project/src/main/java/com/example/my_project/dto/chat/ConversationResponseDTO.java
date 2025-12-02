@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ConversationResponseDTO {
     private Long id;
-    private User user;           // FE cần user.id, user.username, user.avatar
+    private User user;
     private Message lastMessage;
     private long unreadCount;
 }

@@ -30,9 +30,6 @@ public class SupportChatController {
     private final IMessageService messageService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    // ============================================================
-    // USER SEND MESSAGE
-    // ============================================================
     @PostMapping("/send")
     public MessageDTO send(@RequestBody SendMessageRequestDTO req) {
 
@@ -43,9 +40,6 @@ public class SupportChatController {
         return MessageMapper.toDTO(saved);
     }
 
-    // ============================================================
-    // GET HISTORY
-    // ============================================================
     @GetMapping("/history/{userId}")
     public List<MessageDTO> getHistory(@PathVariable Long userId) {
 
@@ -57,17 +51,12 @@ public class SupportChatController {
                 .collect(Collectors.toList());
     }
 
-    // ============================================================
-    // ADMIN — GET ALL CONVERSATIONS
-    // ============================================================
     @GetMapping("/conversations")
     public List<Conversation> getAllConversations() {
         return conversationService.getAllConversations();
     }
 
-    // ============================================================
-    // STOMP SEND MESSAGE
-    // ============================================================
+
     @MessageMapping("/chat.send")
     public void handleMessage(@Payload SendMessageRequestDTO dto) {
         Conversation c = conversationService.getOrCreateConversation(dto.getUserId());
@@ -82,25 +71,7 @@ public class SupportChatController {
         messagingTemplate.convertAndSend("/topic/support.conversation." + dto.getUserId(), dtoMsg);
     }
 
-    // ============================================================
-    // ADMIN SEND MESSAGE
-    // ============================================================
-//    @PostMapping("/send-admin")
-//    public ResponseEntity<MessageDTO> sendAsAdmin(@RequestBody AdminSendRequestDTO req) {
-//
-//        Message saved = messageService.sendAsAdmin(req.getUserId(), req.getContent());
-//
-//        MessageDTO dto = MessageMapper.toDTO(saved);
-//
-//        messagingTemplate.convertAndSend("/topic/support.conversations", dto);
-//
-//        messagingTemplate.convertAndSend(
-//                "/topic/support.conversation." + saved.getConversation().getId(),
-//                dto
-//        );
-//
-//        return ResponseEntity.ok(dto);
-//    }
+
     @PostMapping("/send-admin")
     public ResponseEntity<MessageDTO> sendAsAdmin(
             @RequestBody AdminSendRequestDTO req,
@@ -117,9 +88,6 @@ public class SupportChatController {
         return ResponseEntity.ok(MessageMapper.toDTO(saved));
     }
 
-    // ============================================================
-    // MARK AS READ
-    // ============================================================
     @PostMapping("/{id}/mark-read")
     public ResponseEntity<Conversation> markRead(
             @PathVariable Long id,
